@@ -29,9 +29,9 @@ NormalizeInput(subscript, normalizedInput)
 
 ClassMethod NormalizeSubscripts(i, ByRef in, Output out)
 {
-  if $data(in) = 11 && ($order(in(1, ""), -1) = in) {
-    set out = in(1,i)
-    merge out(i) = in(1,i)
+  if $data(in) = 11 && ($data(in(i, 1)) = 1) {
+    set out = $order(in(i,""))
+    merge out(i) = in(i)
   } else {
     set out = in(i)
   }
