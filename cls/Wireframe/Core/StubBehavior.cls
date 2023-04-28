@@ -1,4 +1,4 @@
-Class Wireframe.Core.Behavior Extends %RegisteredObject
+Class Wireframe.Core.StubBehavior Extends (%RegisteredObject, Wireframe.Core.AbstractBehavior)
 {
 
 Property Recorder As Wireframe.Core.BehaviorRecorder [ Private ];
@@ -10,12 +10,6 @@ Property ExceptionToThrow As %Exception.AbstractException [ Private ];
 Property Arguments [ MultiDimensional, Private ];
 
 Property Passthrough As %Boolean [ Private ];
-
-Method %OnNew(recorder As Wireframe.Core.Stub) As %Status
-{
-  set ..Recorder = recorder
-  return $$$OK
-}
 
 Method ThenReturn(returnValues...)
 {
@@ -50,7 +44,7 @@ Method IsPassthrough() As %Boolean
   return ..Passthrough
 }
 
-Method ReceiveArguments(arguments...) As Wireframe.Core.Behavior
+Method ReceiveArguments(arguments...) As Wireframe.Core.StubBehavior
 {
   do ..WrapInArgumentType(arguments...)
   return $this

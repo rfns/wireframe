@@ -1,50 +1,27 @@
-Class Wireframe.Core.StubCoordinator Extends %RegisteredObject
+Class Wireframe.Core.StubCoordinator Extends (%RegisteredObject, Wireframe.Core.AbstractCoordinator)
 {
 
-Property Stub As Wireframe.Core.Stub [ Private ];
-
-Property Recorders As array Of Wireframe.Core.BehaviorRecorder [ Private ];
-
-Method %OnNew(stub As Wireframe.Core.Stub) As %Status
+Method OnSetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder [ Private ]
 {
-  set ..Stub = stub
-  return $$$OK
-}
+ 
+  set behaviorFactory = ##class(Wireframe.Core.StubBehaviorFactory).%New()
 
-Method SetRecorder(recorder As Wireframe.Core.BehaviorRecorder)
-{
-  set name = recorder.GetMethodName()
-
-  if '..Recorders.IsDefined(name) {
-    do ..Recorders.SetAt(recorder, name)
-  }
-}
-
-Method SetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder
-{
-
-  set recorder = ..Recorders.GetAt(methodName)
-  if $isobject(recorder) return recorder
-
-  set recorder = ##class(Wireframe.Core.BehaviorRecorder).%New($this)
-  do recorder.SetMethodName(methodName)
-
-  do ..SetRecorder(recorder)
+  set recorder = ##class(Wireframe.Core.BehaviorRecorder).%New(
+    $this,
+    behaviorFactory
+  )  
 
   return recorder
 }
 
-Method GetNextBehavior(methodName As %String, args...)
+Method OnGetNextBehavior(behavior As Wireframe.Core.StubBehavior, methodName As %String, args...) As Wireframe.Core.StubBehavior [ Private ]
 {
-  set recorder = ..Recorders.GetAt(methodName)
-  set behavior = recorder.GetNextBehavior(args...)
-
   do ..AssertMethodIsStubbed(methodName, behavior, args...)
 
   return behavior
 }
 
-Method AssertMethodIsStubbed(methodName As %String, behavior As Wireframe.Core.Behavior, args...) [ Private ]
+Method AssertMethodIsStubbed(methodName As %String, behavior As Wireframe.Core.StubBehavior, args...) [ Private ]
 {
   set serialArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.args)
 

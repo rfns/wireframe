@@ -43,7 +43,7 @@ Method CheckForBehavior(methodName, args...)
   return ..Coordinator.GetNextBehavior(methodName, args...)
 }
 
-Method ResolveCall(methodName As %String, behavior As Wireframe.Core.Behavior = "", arguments...) [ Private ]
+Method ResolveCall(methodName As %String, behavior As Wireframe.Core.AbstractBehavior = "", arguments...) [ Private ]
 {
   set realMethodName = $$$RealMethodName(methodName)
 

@@ -3,27 +3,30 @@ Class Wireframe.Core.BehaviorRecorder Extends %RegisteredObject
 
 Property MethodName As %String [ Private ];
 
-Property Behaviors As list Of Wireframe.Core.Behavior [ Private ];
+Property Behaviors As list Of Wireframe.Core.AbstractBehavior [ Private ];
 
 Property StubCoordinator As Wireframe.Core.StubCoordinator [ Private ];
 
+Property BehaviorFactory As Wireframe.Core.AbstractBehaviorFactory [ Private ];
+
 Property CallIndex As %Integer [ Private ];
 
-Method %OnNew(coordinator As Wireframe.Core.StubCoordinator) As %Status
+Method %OnNew(coordinator As Wireframe.Core.StubCoordinator, behaviorFactory As Wireframe.Core.AbstractBehaviorFactory) As %Status
 {
   set ..StubCoordinator = coordinator
+  set ..BehaviorFactory = behaviorFactory
   return $$$OK
 }
 
-Method AppendNewBehavior() As Wireframe.Core.Behavior
+Method AppendNewBehavior() As Wireframe.Core.AbstractBehaviorFactory
 {
-  set newBehavior = ##class(Wireframe.Core.Behavior).%New($this)
+  set newBehavior = ..BehaviorFactory.Create($this)
   do ..Behaviors.Insert(newBehavior)
 
   return newBehavior
 }
 
-Method CloneCurrentBehavior() As Wireframe.Core.Behavior
+Method CloneCurrentBehavior() As Wireframe.Core.AbstractBehavior
 {
   set lastBehaviorIndex = ..Behaviors.Count()
   set behavior = ..Behaviors.GetAt(lastBehaviorIndex)
@@ -34,7 +37,7 @@ Method CloneCurrentBehavior() As Wireframe.Core.Behavior
   return clonedBehavior
 }
 
-Method GetNextBehavior(args...) As Wireframe.Core.Behavior
+Method GetNextBehavior(args...) As Wireframe.Core.AbstractBehavior
 {
 
   set nextIndex = ..FindIndexOfNextMatchingBehavior(args...)
@@ -60,7 +63,7 @@ Method FindIndexOfNextMatchingBehavior(args...) As %Integer [ Private ]
   return 0
 }
 
-Method Begin(args...) As Wireframe.Core.Behavior
+Method Begin(args...) As Wireframe.Core.AbstractBehavior
 {
 
   do ..StubCoordinator.SetRecorder($this)

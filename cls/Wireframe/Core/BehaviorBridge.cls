@@ -1,4 +1,4 @@
-Class Wireframe.Core.BehaviorTrack Extends %RegisteredObject
+Class Wireframe.Core.BehaviorBridge Extends %RegisteredObject
 {
 
 Property Coordinator As Wireframe.Core.StubCoordinator [ Private ];
