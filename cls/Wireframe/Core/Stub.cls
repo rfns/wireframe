@@ -29,10 +29,9 @@ Method GetSpy() As Wireframe.Spy
   return ..Spy
 }
 
-Method AddBehaviorTrack() As Wireframe.Core.BehaviorTrack
+Method BridgeToBehavior() As Wireframe.Core.BehaviorBridge
 {
-
-  return ##class(Wireframe.Core.BehaviorTrack).%New(..Coordinator)
+  return ##class(Wireframe.Core.BehaviorBridge).%New(..Coordinator)
 }
 
 Method GetCoordinator() As Wireframe.Core.StubCoordinator

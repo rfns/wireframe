@@ -9,9 +9,9 @@ Method %OnNew(className As %RegisteredObject = "", args...) As %Status
   return $$$OK
 }
 
-Method When() As Wireframe.Core.BehaviorTrack
+Method When() As Wireframe.Core.BehaviorBridge
 {
-  return ..Stub.AddBehaviorTrack()
+  return ..Stub.BridgeToBehavior()
 }
 
 Method GetObject() As Wireframe.Spy
