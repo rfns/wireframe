@@ -7,7 +7,6 @@ Property Spy As Wireframe.Spy [ Private ];
 
 Method %OnNew(className As %String = "", args...) As %Status [ Private ]
 {
-
   set ..Coordinator = ##class(Wireframe.Core.StubCoordinator).%New($this)
   do ..InitializeSpy(className, args...).UseThisStub($this)
   return $$$OK
@@ -15,8 +14,6 @@ Method %OnNew(className As %String = "", args...) As %Status [ Private ]
 
 Method InitializeSpy(className, args...) As Wireframe.Spy [ Private ]
 {
-
-
   if className = "" {
     set ..Spy = ##class(Wireframe.Spy).%New()
   } else {
@@ -41,11 +38,6 @@ Method AddBehaviorTrack() As Wireframe.Core.BehaviorTrack
 Method GetCoordinator() As Wireframe.Core.StubCoordinator
 {
   return ..Coordinator
-}
-
-ClassMethod Create(className As %String = "", args...) As Stick.Stub
-{
-  return ..%New(className, args...)
 }
 
 }

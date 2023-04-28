@@ -1,6 +1,8 @@
 Class Wireframe.Core.MethodLogger Extends %RegisteredObject
 {
 
+Property Controller As Wireframe.Core.LoggerController [ Private ];
+
 Property CallCount As %Integer [ InitialExpression = 0 ];
 
 Property Calls [ MultiDimensional ];
@@ -11,15 +13,21 @@ Property LastException As %Exception.AbstractException;
 
 Property LastReturnedValue;
 
-Property CalledWithArgumentNTimes As %Integer [ MultiDimensional ];
+Method %OnNew(controller As Wireframe.Core.LoggerController) As %Status
+{
+  set ..Controller = controller
+  return $$$OK
+}
 
 Method Log(ByRef args = "", exception As %Exception.AbstractException = "", returnValue = "")
 {
+  if '..Controller.IsEnabled() return
+  
   merge i%LastUsedArguments = args
   set ..LastException = exception
   set ..LastReturnedValue = returnValue
   set ..CallCount = ..CallCount + 1
-  set i%Calls(..CallCount) = ##class(Stick.Spy.CallRecord).%New(.args, exception, returnValue)
+  set i%Calls(..CallCount) = ##class(Wireframe.Core.MethodCallLog).%New(.args, exception, returnValue)
 }
 
 Method GetTimesCalledWithArguments(ByRef args = "") As %Integer
@@ -33,7 +41,7 @@ Method GetTimesCalledWithArguments(ByRef args = "") As %Integer
      kill recordArgs
      merge recordArgs = callRecord.Arguments
 
-     if ##class(Stick.Helper).ArgumentCompare(.args, .recordArgs) {
+     if ##class(Wireframe.Core.Helpers).ArgumentCompare(.loggedArgs, .args) {
        set count = count + 1
      }
    }

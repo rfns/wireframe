@@ -1,4 +1,4 @@
-Include stick
+Include wireframe
 
 Class Wireframe.Core.MethodProxy Extends %RegisteredObject
 {
@@ -11,9 +11,7 @@ Property Spy As Wireframe.Spy [ MultiDimensional ];
 
 Method %OnNew(spy As Wireframe.Spy) As %Status
 {
-
   set ..Spy = spy
-
   do ..AttemptToLinkRealObject(spy.GetRealObject())
 
   return $$$OK
@@ -58,7 +56,7 @@ Method ResolveCall(methodName As %String, behavior As Wireframe.Core.Behavior = 
 
   do ..Spy.ForMethod(realMethodName).Log(.args, exception, returnValue)
 
-  if behavior.HasExceptionToThrow() {
+  if $isobject(exception) && exception.%IsA("%Exception.AbstractException") {
     throw behavior.GetExceptionToThrow()
   }
 

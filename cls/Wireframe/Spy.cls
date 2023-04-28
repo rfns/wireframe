@@ -9,23 +9,21 @@ Property "__MultiDimensionals__" [ Internal, MultiDimensional, Private ];
 
 Property "__Stub__" As Wireframe.Core.Stub [ Internal, Private ];
 
-Property "__Proxy__" As Wireframe.Core.MethodProxy [ Private ];
+Property "__Proxy__" As Wireframe.Core.MethodProxy [ Internal, Private ];
 
-Property "__Logger__" As Wireframe.Core.Logger [ Private ];
+Property "__Logger__" As Wireframe.Core.LoggerController [ Internal, Private ];
 
-Property ReflectionMode As %Boolean [ InitialExpression = 0 ];
-
-Property RealObject As %RegisteredObject [ Private ];
+Property "__RealObject__" As %RegisteredObject [ Internal, Private ];
 
 Method %OnNew(object As %String = "", replayConstructor As %Boolean = 0) As %Status
 {
 
-  set .."__Logger__" = ##class(Wireframe.Core.Logger).%New()
+  set .."__Logger__" = ##class(Wireframe.Core.LoggerController).%New()
 
   do ..AssertObjectIsNotAnotherSpy(object)
   do ..SetRealObject(object, replayConstructor)
 
-  set .."__Proxy__" = ##class(Wireframe.Core.MethodProxy).%New($this)
+  set .."__Proxy__" = ##class(Wireframe.Core.MethodProxy).%New($this)  
 
   return $$$OK
 }
@@ -48,25 +46,28 @@ Method UseThisStub(stub As Wireframe.Core.Stub)
 
 Method GetRealObject() As %RegisteredObject
 {
-  return ..RealObject
+  return .."__RealObject__"
 }
 
 Method SetRealObject(object As %RegisteredObject, replayConstructor As %Boolean = 0) As %RegisteredObject
 {
-  set ..RealObject = object
+  do .."__Logger__".Disable()
+  
+  set .."__RealObject__" = object
   do ..FillUsingRealObject(replayConstructor)
+  
+  do .."__Logger__".Enable()
 }
 
 Method FillUsingRealObject(replayConstructor As %Boolean = 0) [ Internal, Private ]
 {
-  set ..ReflectionMode = 1
-  do ##class(Wireframe.Core.Helpers).CopyProperties(..RealObject, $this)
+  do .."__Logger__".Disable()
+  
+  do ##class(Wireframe.Core.Helpers).CopyProperties(..GetRealObject(), $this)
 
-  if replayConstructor = 1 {
-    do .."__MethodProxy__".InterceptCall("_%OnNew")
-  }
+  if replayConstructor = 1 do .."__MethodProxy__".InterceptCall("_%OnNew")
 
-  set ..ReflectionMode = 0
+  do .."__Logger__".Enable()
 }
 
 Method %DispatchMethod(methodName As %String, args...)
@@ -80,12 +81,9 @@ Method %DispatchMethod(methodName As %String, args...)
 
 Method %DispatchSetProperty(propertyName As %String, value) [ ServerOnly = 1 ]
 {
-
   set propertySpy = ..ForProperty(propertyName)
 
-  if '..ReflectionMode {
-    do propertySpy.RecordSetOperation(value)
-  }
+  do propertySpy.RecordSetOperation(value)
 
   set .."__Properties__"(propertyName) = value
 }
@@ -106,7 +104,7 @@ Method %DispatchGetProperty(propertyName As %String)
     set i%"__Properties__"(propertyName) = value
   }
 
-  if '..ReflectionMode do propertySpy.RecordGetOperation(value)
+  do propertySpy.RecordGetOperation(value)
 
   return value
 }
@@ -123,8 +121,6 @@ Method ForProperty(propertyName As %String) As Wireframe.Core.PropertyLogger
 
 Method Clear()
 {
-  set ..ReflectionMode = 0
-
   kill i%"__Properties__"
   kill i%"__MultiDimensionals__"
   kill i%"__Proxy__"
@@ -175,13 +171,6 @@ Method "_MergeMultiDimensional"(name As %String, ByRef value, subscripts...) [ I
   }
 
   merge i%"__MultiDimensionals__"(name) = value
-}
-
-ClassMethod %IsA(className As %String) As %Boolean
-{
-  set t = $this
-  zw t
-  return ..%DispatchMethod("%IsA", className)
 }
 
 }

@@ -1,6 +1,8 @@
 Class Wireframe.Core.PropertyLogger Extends %RegisteredObject
 {
 
+Property Controller As Wireframe.Core.LoggerController [ Private ];
+
 Property GetCount As %Integer [ InitialExpression = 0, ReadOnly ];
 
 Property SetCount As %Integer [ InitialExpression = 0, ReadOnly ];
@@ -12,6 +14,12 @@ Property Gets [ MultiDimensional, ReadOnly ];
 Property LastSetValue [ ReadOnly ];
 
 Property LastGetValue;
+
+Method %OnNew(controller As Wireframe.Core.LoggerController) As %Status
+{
+  set ..Controller = controller
+  return $$$OK
+}
 
 Method IncreaseGetCount()
 {
@@ -25,6 +33,8 @@ Method IncreaseSetCount()
 
 Method RecordSetOperation(value As %String)
 {
+  if '..Controller.IsEnabled() return
+  
   if i%LastSetValue = value  return
   do ..IncreaseSetCount()
 
@@ -34,7 +44,8 @@ Method RecordSetOperation(value As %String)
 
 Method RecordGetOperation(value As %String)
 {
-
+  if '..Controller.IsEnabled() return
+  
   do ..IncreaseGetCount()
 
   set i%LastGetValue = value
