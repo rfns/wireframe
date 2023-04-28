@@ -1,27 +1,34 @@
-Class Wireframe.Mock Extends %RegisteredObject
+Class Wireframe.Mock Extends (%RegisteredObject, Wireframe.Core.AbstractTestDouble)
 {
 
 Property Stub As Wireframe.Core.Stub [ Private ];
 
-Method %OnNew(className As %RegisteredObject = "", args...) As %Status
+Method OnSetBridge() As Wireframe.Core.ExpectationBridge [ Private ]
 {
-  set ..Stub = ##class(Wireframe.Core.Stub).%New(className, args...)
-  return $$$OK
+  return ##class(Wireframe.Core.ExpectationBridge).%New()
 }
 
 Method When() As Wireframe.Core.BehaviorBridge
 {
-  return ..Stub.BridgeToBehavior()
+  merge args = i%ConstructorArgs
+  
+  if '$isobject(..Stub) {    
+    set ..Stub = ##class(Wireframe.Core.Stub).%New(..ClassName, args...)
+  }
+  
+  do ..SetSpy(..Stub.GetObject())
+  
+  return ..Stub.GetBridge()
 }
 
-Method GetObject() As Wireframe.Spy
+Method Expect() As Wireframe.Core.ExpectationBridge
 {
-  return ..Stub.GetSpy()
+  return ..GetBridge()
 }
 
-Method GetArgumentMatcher() As Wireframe.Core.ArgumentMatcher
+Method GetVerifier() As Wireframe.Core.ExpectationVerifier
 {
-  return ##class(Wireframe.Core.ArgumentMatcher).%New()
+  return ##class(Wireframe.Core.ExpectationVerifier).%New($this)
 }
 
 }

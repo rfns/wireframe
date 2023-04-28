@@ -31,7 +31,11 @@ Method OnSetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder
   $$$ThrowStatus($$$ERROR($$$MethodNotImplemented, "OnSetupRecorder"))
 }
 
-Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.AbstractBehavior
+Method OnBehaviorSet(behavior As Wireframe.Core.AbstractBehavior)
+{
+}
+
+Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.BehaviorState
 {
   set recorder = ..Recorders.GetAt(methodName)
   set behavior = recorder.GetNextBehavior(args...)
@@ -39,7 +43,7 @@ Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.Abstrac
   return ..OnGetNextBehavior(behavior, methodName, args...)
 }
 
-Method OnGetNextBehavior() As Wireframe.Core.AbstractBehavior [ Abstract, Private ]
+Method OnGetNextBehavior() As Wireframe.Core.BehaviorState [ Abstract, Private ]
 {
   $$$ThrowStatus($$$ERROR($$$MethodNotImplemented, "OnGetNextBehavior"))
 }

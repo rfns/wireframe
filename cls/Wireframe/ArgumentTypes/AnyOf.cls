@@ -14,8 +14,12 @@ Method Match(input) As %Boolean
   if $isobject(input) {
     return input.%IsA(..ExpectedType)
   }
-
-  return $classmethod(..ExpectedType, "IsValid", input)
+      
+  if ##class(%Dictionary.CompiledClass).%ExistsId(..ExpectedType_"||IsValid") {
+    return $classmethod(..ExpectedType, "IsValid", input)
+  }
+  
+  return 0
 }
 
 }

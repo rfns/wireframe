@@ -4,7 +4,18 @@ Class Tests.Wireframe.Mock
 ClassMethod T()
 {
   set mock = ##class(Wireframe.Mock).%New()
+  set verifier = mock.GetVerifier()
   set arg = mock.GetArgumentMatcher()
+  
+  do mock.Expect().ATest(arg.AnyOf("%ListOfDataTypes")).Exactly(1).AndReturn(1)
+  do mock.Expect().AndAnotherTest(1).AtLeast(3).AndReturn(10)
+  
+  write mock.GetObject().ATest(1)
+  write mock.GetObject().ATest(1)
+  write mock.GetObject().AndAnotherTest(1)
+  write mock.GetObject().AndAnotherTest(1)
+  
+  do $System.OBJ.DisplayError(verifier.Verify())
 
   do mock.When().OneTest(arg.ByAET({ "id": [1,2,3] })).ThenReturn(5)
   do mock.When().OneTest(arg.AnyOf("%ListOfDataTypes")).ThenReturn(4)
@@ -24,6 +35,8 @@ ClassMethod T()
   write object.OneTest(2)
   
   write object.AnotherTest(1, .a, 2, "")
+  
+  do verifier.Verify()
 }
 
 ClassMethod T2()

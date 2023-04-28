@@ -81,12 +81,19 @@ ClassMethod SerializeArguments(ByRef args = "") As %String
   for  {
     set key=$order(args(key))
     quit:key=""
+    
+    set arg = args(key)
+    
+    if $data(args(key)) > 1  set arg = "(MultiDimensional)"
+    if $isobject(arg) && arg.%Extends("Wireframe.Core.MatchableArgument") {
+      if arg.%IsA("Wireframe.ArgumentTypes.Is") {
+        set arg = arg.UnwrapValue()
+      } else {
+        set arg = "<arg."_arg.%ClassName()_"()>"
+      }
+    }
 
-    set $list(argsList, *+1) = $select(
-      $data(args(key)) > 1
-      : "<MultiDimensional>",
-      1: args(key)
-    )
+    set $list(argsList, *+1) = arg
 
   }
   return $lts(argsList)

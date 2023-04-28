@@ -43,12 +43,12 @@ Method CheckForBehavior(methodName, args...)
   return ..Coordinator.GetNextBehavior(methodName, args...)
 }
 
-Method ResolveCall(methodName As %String, behavior As Wireframe.Core.AbstractBehavior = "", arguments...) [ Private ]
+Method ResolveCall(methodName As %String, behavior As Wireframe.Core.AbstractBehavior = "", args...) [ Private ]
 {
   set realMethodName = $$$RealMethodName(methodName)
 
   if '$isobject(behavior) || behavior.IsPassthrough() {
-    return ..ForwardToImplementation(methodName, arguments...)
+    return ..ForwardToImplementation(methodName, args...)
   }
 
   set returnValue = behavior.GetValueToReturn()

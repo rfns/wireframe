@@ -1,17 +1,9 @@
-Class Wireframe.Core.BehaviorBridge Extends %RegisteredObject
+Class Wireframe.Core.BehaviorBridge Extends (%RegisteredObject, Wireframe.Core.AbstractCoordinatorBridge)
 {
 
-Property Coordinator As Wireframe.Core.StubCoordinator [ Private ];
-
-Method %OnNew(coordinator As Wireframe.Core.StubCoordinator) As %Status
+Method OnSetCoordinator() As Wireframe.Core.StubCoordinator
 {
-  set ..Coordinator = coordinator
-  return $$$OK
-}
-
-Method %DispatchMethod(methodName As %String, args...)
-{
-  return ..Coordinator.SetupRecorder(methodName).Begin(args...)
+  return ##class(Wireframe.Core.StubCoordinator).%New()
 }
 
 }

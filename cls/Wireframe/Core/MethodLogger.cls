@@ -35,11 +35,10 @@ Method GetTimesCalledWithArguments(ByRef args = "") As %Integer
    set count = 0
    set key = ""
    for i=1:$order(i%Calls(key)) {
-     set key = $order(i%Calls(key), 1, callRecord)
+     set key = $order(i%Calls(key), 1, callLog)
      quit:key=""
 
-     kill recordArgs
-     merge recordArgs = callRecord.Arguments
+     merge loggedArgs = callLog.Arguments
 
      if ##class(Wireframe.Core.Helpers).ArgumentCompare(.loggedArgs, .args) {
        set count = count + 1

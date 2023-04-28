@@ -37,10 +37,9 @@ Method AssertObjectIsNotAnotherSpy(object As %RegisteredObject = "") [ Internal,
   }
 }
 
-Method UseThisStub(stub As Wireframe.Core.Stub)
+Method UseThisCoordinator(coordinator As Wireframe.Core.AbstractCoordinator)
 {
-  set .."__Stub__" = stub
-  do .."__Proxy__".SetCoordinator(stub.GetCoordinator())
+  do .."__Proxy__".SetCoordinator(coordinator)
   return $this
 }
 

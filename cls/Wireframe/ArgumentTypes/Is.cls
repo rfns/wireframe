@@ -5,7 +5,7 @@ Property ExpectedValue As %String [ Private ];
 
 Method %OnNew(value) As %Status
 {
-  set ..ExpectedValue = value
+  set i%ExpectedValue = value
   return $$$OK
 }
 
@@ -15,6 +15,11 @@ Method Match(input) As %Boolean
   set expectedValue = ..ExpectedValue
 
   return (value = expectedValue)
+}
+
+Method UnwrapValue()
+{
+  return ..ExpectedValue
 }
 
 }

@@ -5,22 +5,24 @@ Property MethodName As %String [ Private ];
 
 Property Behaviors As list Of Wireframe.Core.AbstractBehavior [ Private ];
 
-Property StubCoordinator As Wireframe.Core.StubCoordinator [ Private ];
+Property Coordinator As Wireframe.Core.AbstractCoordinator [ Private ];
 
 Property BehaviorFactory As Wireframe.Core.AbstractBehaviorFactory [ Private ];
 
 Property CallIndex As %Integer [ Private ];
 
-Method %OnNew(coordinator As Wireframe.Core.StubCoordinator, behaviorFactory As Wireframe.Core.AbstractBehaviorFactory) As %Status
+Method %OnNew(coordinator As Wireframe.Core.AbstractCoordinator, behaviorFactory As Wireframe.Core.AbstractBehaviorFactory) As %Status
 {
-  set ..StubCoordinator = coordinator
+  set ..Coordinator = coordinator
   set ..BehaviorFactory = behaviorFactory
   return $$$OK
 }
 
 Method AppendNewBehavior() As Wireframe.Core.AbstractBehaviorFactory
 {
-  set newBehavior = ..BehaviorFactory.Create($this)
+  set newBehavior = ..BehaviorFactory.Create($this)  
+  
+  do ..Coordinator.OnBehaviorSet(newBehavior)
   do ..Behaviors.Insert(newBehavior)
 
   return newBehavior
@@ -32,6 +34,8 @@ Method CloneCurrentBehavior() As Wireframe.Core.AbstractBehavior
   set behavior = ..Behaviors.GetAt(lastBehaviorIndex)
 
   set clonedBehavior = behavior.%ConstructClone()
+  
+  do ..Coordinator.OnBehaviorSet(clonedBehavior)
   do ..Behaviors.Insert(clonedBehavior)
 
   return clonedBehavior
@@ -53,7 +57,7 @@ Method FindIndexOfNextMatchingBehavior(args...) As %Integer [ Private ]
 {
   for i=1:1:..Behaviors.Count() {
     set behavior = ..Behaviors.GetAt(i)
-    do behavior.GetArguments(.recordedArgs)
+    do behavior.GetState().GetArguments(.recordedArgs)
 
     if ##class(Wireframe.Core.Helpers).ArgumentCompare(.args, .recordedArgs) {
       return i
@@ -63,10 +67,14 @@ Method FindIndexOfNextMatchingBehavior(args...) As %Integer [ Private ]
   return 0
 }
 
+Method GetBehaviorsList() As %ListOfObjects
+{
+  return ..Behaviors
+}
+
 Method Begin(args...) As Wireframe.Core.AbstractBehavior
 {
-
-  do ..StubCoordinator.SetRecorder($this)
+  do ..Coordinator.SetRecorder($this)
   return ..AppendNewBehavior().ReceiveArguments(args...)
 }
 

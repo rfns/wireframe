@@ -14,11 +14,11 @@ Method OnSetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder
   return recorder
 }
 
-Method OnGetNextBehavior(behavior As Wireframe.Core.StubBehavior, methodName As %String, args...) As Wireframe.Core.StubBehavior [ Private ]
+Method OnGetNextBehavior(behavior As Wireframe.Core.StubBehavior, methodName As %String, args...) As Wireframe.Core.BehaviorState [ Private ]
 {
   do ..AssertMethodIsStubbed(methodName, behavior, args...)
 
-  return behavior
+  return behavior.GetState()
 }
 
 Method AssertMethodIsStubbed(methodName As %String, behavior As Wireframe.Core.StubBehavior, args...) [ Private ]
