@@ -15,7 +15,7 @@ ClassMethod T()
   write mock.GetObject().AndAnotherTest(1)
   write mock.GetObject().AndAnotherTest(1)
   
-  do $System.OBJ.DisplayError(verifier.Verify())
+  do $System.OBJ.DisplayError(verifier.Verify("ATest"))
 
   do mock.When().OneTest(arg.ByAET({ "id": [1,2,3] })).ThenReturn(5)
   do mock.When().OneTest(arg.AnyOf("%ListOfDataTypes")).ThenReturn(4)

@@ -37,9 +37,9 @@ Method GetExpectationMatchers(methodName As %String = "") As %ListOfObjects
    
   set list = ..ExpectationMatchers
   
-  if methodName '= "" {    
+  if methodName '= "" {
+    set list = ##class(%ListOfObjects).%New()
     for i=1:1:..ExpectationMatchers.Count() {
-      set list = ##class(%ListOfObjects).%New()
       set expectation = ..ExpectationMatchers.GetAt(i)
       if expectation.GetMethodName() = methodName {
         do list.Insert(expectation)
