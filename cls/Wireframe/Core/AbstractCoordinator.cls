@@ -38,8 +38,9 @@ Method OnBehaviorSet(behavior As Wireframe.Core.AbstractBehavior)
 Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.BehaviorState
 {
   set recorder = ..Recorders.GetAt(methodName)
-  set behavior = recorder.GetNextBehavior(args...)
+  if '$isobject(recorder) return ""
   
+  set behavior = recorder.GetNextBehavior(args...)  
   return ..OnGetNextBehavior(behavior, methodName, args...)
 }
 
