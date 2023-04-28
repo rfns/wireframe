@@ -49,5 +49,20 @@ ClassMethod T2()
   w spy.Count()
 }
 
+ClassMethod T3()
+{
+  set mock = ##class(Wireframe.Mock).%New()
+  set arg = mock.GetArgumentMatcher()
+  
+  do mock.When().ICalledYou(arg.AnyOf("%Integer")).ThenReturn(10, 20, 30)
+  
+  set obj = mock.GetObject()
+  
+  write obj.ICalledYou(10)
+  write obj.ICalledYou("aaa")
+  write obj.ICalledYou(20)
+  write obj.ICalledYou(30)
+}
+
 }
 

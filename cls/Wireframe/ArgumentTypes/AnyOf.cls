@@ -14,12 +14,23 @@ Method Match(input) As %Boolean
   if $isobject(input) {
     return input.%IsA(..ExpectedType)
   }
+  
+  set type = ..NormalizeClassName(..ExpectedType)
       
-  if ##class(%Dictionary.CompiledClass).%ExistsId(..ExpectedType_"||IsValid") {
-    return $classmethod(..ExpectedType, "IsValid", input)
+  if ##class(%Dictionary.CompiledMethod).%ExistsId(type_"||IsValid") {
+    return $classmethod(type, "IsValid", input)
   }
   
   return 0
+}
+
+Method NormalizeClassName(className As %String) [ Private ]
+{
+  if className [ "%" {
+    return "%Library."_$extract(className, 2, *)
+  }
+  
+  return className
 }
 
 }
