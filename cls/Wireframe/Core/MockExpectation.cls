@@ -1,7 +1,7 @@
 Class Wireframe.Core.MockExpectation Extends (%RegisteredObject, Wireframe.Core.AbstractBehavior)
 {
 
-Property Times As %Integer [ InitialExpression = 0, Private ];
+Property Times As %Integer [ InitialExpression = 1, Private ];
 
 Property Comparator As %String [ InitialExpression = "=", Private ];
 
