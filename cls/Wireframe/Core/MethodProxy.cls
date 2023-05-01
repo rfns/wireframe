@@ -57,7 +57,7 @@ Method ResolveCall(methodName As %String, behavior As Wireframe.Core.AbstractBeh
   do ..Spy.ForMethod(realMethodName).Log(.args, exception, returnValue)
 
   if $isobject(exception) && exception.%IsA("%Exception.AbstractException") {
-    throw behavior.GetExceptionToThrow()
+    throw exception
   }
 
   return returnValue
