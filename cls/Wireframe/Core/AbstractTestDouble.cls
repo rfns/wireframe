@@ -1,7 +1,7 @@
 Class Wireframe.Core.AbstractTestDouble [ Abstract ]
 {
 
-Property Bridge As Wireframe.Core.AbstractCoordinator [ Private ];
+Property Bridge As Wireframe.Core.AbstractCoordinatorBridge [ Private ];
 
 Property ClassName As %String [ Private ];
 
@@ -61,6 +61,11 @@ Method InitializeSpy(className As %String, constructorArgs...)
   }
 
   return ..Spy
+}
+
+Method Reset()
+{
+  do ..Spy.Clear()
 }
 
 }
