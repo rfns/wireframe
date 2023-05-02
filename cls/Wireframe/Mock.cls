@@ -31,5 +31,10 @@ Method GetVerifier() As Wireframe.Core.ExpectationVerifier
   return ##class(Wireframe.Core.ExpectationVerifier).%New($this)
 }
 
+Method GetOrderedVerifier() As Wireframe.Core.OrderedExpectationVerifier
+{
+  return ##class(Wireframe.Core.OrderedExpectationVerifier).%New($this)
+}
+
 }
 

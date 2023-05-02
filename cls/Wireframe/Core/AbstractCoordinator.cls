@@ -1,4 +1,4 @@
-Class Wireframe.Core.AbstractCoordinator Extends %RegisteredObject
+Class Wireframe.Core.AbstractCoordinator [ Abstract ]
 {
 
 Property Recorders As array Of Wireframe.Core.BehaviorRecorder [ Private ];
@@ -47,6 +47,11 @@ Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.Behavio
 Method OnGetNextBehavior() As Wireframe.Core.BehaviorState [ Abstract, Private ]
 {
   $$$ThrowStatus($$$ERROR($$$MethodNotImplemented, "OnGetNextBehavior"))
+}
+
+Method Reset()
+{
+  do ..Recorders.Clear()
 }
 
 }

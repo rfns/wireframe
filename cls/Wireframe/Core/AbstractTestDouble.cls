@@ -66,6 +66,7 @@ Method InitializeSpy(className As %String, constructorArgs...)
 Method Reset()
 {
   do ..Spy.Clear()
+  do ..Bridge.GetCoordinator().Reset()
 }
 
 }

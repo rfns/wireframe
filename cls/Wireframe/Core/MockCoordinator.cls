@@ -1,4 +1,4 @@
-Class Wireframe.Core.MockCoordinator Extends Wireframe.Core.AbstractCoordinator
+Class Wireframe.Core.MockCoordinator Extends (%RegisteredObject, Wireframe.Core.AbstractCoordinator)
 {
 
 Property ExpectationMatchers As list Of Wireframe.Core.ExpectationMatcher [ Private ];
@@ -48,6 +48,12 @@ Method GetExpectationMatchers(methodName As %String = "") As %ListOfObjects
   }
   
   return list
+}
+
+Method Reset()
+{
+  do ##super()
+  do ..ExpectationMatchers.Clear()
 }
 
 }

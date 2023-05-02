@@ -123,7 +123,6 @@ Method Clear()
   kill i%"__Properties__"
   kill i%"__MultiDimensionals__"
   kill i%"__Proxy__"
-  kill i%"__Generator__"
 
   if $isobject(..RealObject) do .."_FillUsingRealObject"()
 

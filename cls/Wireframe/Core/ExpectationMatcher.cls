@@ -37,43 +37,47 @@ Method VerifyUnordered(methodLogger As Wireframe.Core.MethodLogger) As %Status [
   set timesExpected = ..Expectation.GetExpectedTimes()
   set methodName = ..Expectation.GetMethodName()
   
-  return ..ValidateExpression(methodName, timesExpected, matches, .expectedArgs, 0)
+  return ..ValidateExpression(methodName, timesExpected, matches, .expectedArgs)
 }
 
-Method VerifyOrdered(index, methodLogger As Wireframe.Core.MethodLogger) As %Status [ Private ]
+Method VerifyOrdered(methodLogger As Wireframe.Core.MethodLogger, index As %Integer) As %Status [ Private ]
 {
-  set matches = methodLogger.Calls(index).CallCount  
   set timesExpected = ..Expectation.GetExpectedTimes()
   set methodName = ..Expectation.GetMethodName()
+  set receivedArgs = ""
     
-  do ..Expectation.GetState().GetArguments(.expectedArgs)
-  merge receivedArgs = methodLogger.Calls(index).Arguments    
+  do ..Expectation.GetState().GetArguments(.expectedArgs)  
+  
+  set callLog = methodLogger.GetCallLogByGeneralCallIndex(index)
+  set serialExpectedArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.expectedArgs)
+  
+  if $isobject(callLog) {
+    merge receivedArgs = callLog.Arguments  
+  } else {
+    return $$$ERROR($$$GeneralError, $$$FormatText("Call order mismatch: expected Method '%1' to be called at call #%2 (expected args: %3).", methodName, index, serialExpectedArgs))
+  }  
   
   if '##class(Wireframe.Core.Helpers).ArgumentCompare(.receivedArgs, .expectedArgs) {
-    set serialArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.receivedArgs)
-    return $$$ERROR($$$GeneralError, "Method '"_methodName_"' received unexpected arguments at call #"_index_"(args: "_serialArgs_")")
+    set serialReceivedArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.receivedArgs)
+    return $$$ERROR($$$GeneralError, $$$FormatText("Method '%1' received unexpected arguments at call #%2 (received: %3) / (expected: %4)", methodName, index, serialReceivedArgs, serialExpectedArgs))
   }
   
-  set matches = methodLogger.Calls(index).CallCount  
-  set timesExpected = ..Expectation.GetExpectedTimes()
-  
-  return ..ValidateExpression(methodName, timesExpected, matches, .receivedArgs, .expectedArgs)
+  return ..VerifyUnordered(methodLogger)
 }
 
 Method ValidateExpression(methodName As %String, timesExpected As %Integer, matches As %Integer, ByRef expectedArgs, ByRef receivedArgs) As %Status [ Private ]
 {
   set serialExpectedArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.expectedArgs)
-  set serialReceivedArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.receivedArgs)  
   set descriptiveOperator = ..ConvertOperatorToDescriptive(timesExpected)
   
   if matches = 0 {    
-    return $$$ERROR($$$GeneralError, "Expected method '"_methodName_"' to be called "_descriptiveOperator_" time(s) (expected args: "_serialExpectedArgs_")")
+    return $$$ERROR($$$GeneralError, $$$FormatText("Expected method '%1' to be called %2 time(s) (receiving args: %3)", methodName, descriptiveOperator, serialExpectedArgs))
   }      
   
   set valid = $xecute($$$FormatText("return (%1 %2)", matches, timesExpected))
   
   if 'valid {
-    set errorMessage = $$$FormatText("Expected method '%1' to be called %2 time(s) but got called %3 (expected args: %4).", methodName, ..ConvertOperatorToDescriptive(timesExpected), matches, serialExpectedArgs)
+    set errorMessage = $$$FormatText("Expected method '%1' to be called %2 time(s) (receiving args: %3) but got called %4.", methodName, ..ConvertOperatorToDescriptive(timesExpected), serialExpectedArgs, matches)
     return $$$ERROR($$$GeneralError, errorMessage)
   }
   

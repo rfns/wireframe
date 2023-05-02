@@ -82,7 +82,7 @@ ClassMethod SerializeArguments(ByRef args = "") As %String
     set key=$order(args(key))
     quit:key=""
     
-    set arg = args(key)
+    merge arg = args(key)
     
     if $data(args(key)) > 1  set arg = "(MultiDimensional)"
     if $isobject(arg) && arg.%Extends("Wireframe.Core.MatchableArgument") {

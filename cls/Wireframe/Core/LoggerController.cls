@@ -7,6 +7,8 @@ Property Methods As Wireframe.Core.MethodLogger [ Private ];
 
 Property Properties As Wireframe.Core.PropertyLogger [ Private ];
 
+Property CallIndex As %Integer [ InitialExpression = 0, Private ];
+
 Method ForMethod(methodName As %String) As Wireframe.Core.MethodLogger
 {
   set logger = $get(i%Methods(methodName))
@@ -49,6 +51,22 @@ Method Clear()
   kill i%Properties
   
   set ..Enabled = 1
+}
+
+Method IncrementCallIndex()
+{
+  set ..CallIndex = ..CallIndex + 1
+}
+
+Method GetCallIndex() As %Integer
+{
+  return ..CallIndex
+}
+
+Method ForEachMethod(Output methodName As %String, Output methodLogger As Wireframe.Core.MethodLogger)
+{
+  set methodName = $order(i%Methods(methodName, 1, methodLogger))
+  return (methodName = "")
 }
 
 }

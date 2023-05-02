@@ -23,11 +23,21 @@ Method Log(ByRef args = "", exception As %Exception.AbstractException = "", retu
 {
   if '..Controller.IsEnabled() return
   
+  do ..Controller.IncrementCallIndex()
+  
+  set generalCallIndex = ..Controller.GetCallIndex()
+  
   merge i%LastUsedArguments = args
   set ..LastException = exception
   set ..LastReturnedValue = returnValue
   set ..CallCount = ..CallCount + 1
-  set i%Calls(..CallCount) = ##class(Wireframe.Core.MethodCallLog).%New(.args, exception, returnValue)
+  
+  set i%Calls(..CallCount) = ##class(Wireframe.Core.MethodCallLog).%New(
+    .args, 
+    exception, 
+    returnValue,
+    generalCallIndex
+  )
 }
 
 Method GetTimesCalledWithArguments(ByRef args = "") As %Integer
@@ -64,6 +74,22 @@ Method GetTimesReturnedWithValue(value) As %Integer
    }
 
    return count
+}
+
+Method GetCallLogByGeneralCallIndex(generalCallIndex As %Integer) As Wireframe.Core.MethodCallLog
+{
+  set callIdx = ""
+  
+  for {
+    set callIdx = $order(i%Calls(callIdx), 1, callLog)
+    quit:callIdx=""
+    
+    if callLog.GeneralCallIndex = generalCallIndex {
+      return callLog
+    }
+  }
+  
+  return ""
 }
 
 }
