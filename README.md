@@ -138,7 +138,7 @@ ClassMethod RunSomeLongOperation()
 {
   set start = $piece($horolog, ",", 2)
 
-  do ..LogService.Log("Operation started")
+  do ..LogService.Log(start, "Operation started")
 
   // The operation code.
 
