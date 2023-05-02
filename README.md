@@ -19,10 +19,10 @@ With the exception of the spy, The framework API can be accessed __before__ call
 * * `GetVerifier()`: Returns an _unordered_ verifier that can be employed to verify whether the expectations set by the test were met.
 * * `Verify()`: Validates and returns an status based on meeting or not the expectations. This will also call `Reset()`.
 * * `VerifyOnly(methodName?)`: Same as `Verify` but this won't call `Reset()`. Useful if you want to replay the validation for debugging purposes. Passing `methodName` will restrict the validation that method only.
-* `GerOrderedVerifier()` is about the same as `GetVerifier`, but this one takes in account the order of execution inside the SUT against the order of the expectations that were defined by the test.
+* * `GerOrderedVerifier()` is about the same as `GetVerifier`, but this one takes in account the order of execution inside the SUT against the order of the expectations that were defined by the test.
 * * * `Verify()`: Validates and returns n status based on meeting or not the expectations. This will also call `Reset()`.
 * * * `VerifyOnly(methodName?)`: Same as `Verify` but this won't call `Reset()`. Useful if you want to replay the validation for debugging purposes. Passing `methodName` will restrict the validation that method only.
-* `Reset()`: Resets the test doubles to a pristine state. Calling a previously stubbed method as well as attempting to verify the mock, will throw an exception.
+* * `Reset()`: Resets the test doubles to a pristine state. Calling a previously stubbed method as well as attempting to verify the mock, will throw an exception.
 
 ## Test double: Stub
 
