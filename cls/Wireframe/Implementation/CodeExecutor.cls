@@ -61,7 +61,6 @@ EvalExpression(exp)
 Method CreateXecuteCallPoint() As %String
 {
   return $$$FormatText("%3 return $$%1^%2%3", ..Label, ..Routine.Name, ..Signature)
-  //return $$$FormatText("(args) return $$%1^%2(.args)", ..Label, ..Routine.Name, ..Signature)
 }
 
 }
