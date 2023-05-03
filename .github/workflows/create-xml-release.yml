@@ -41,7 +41,7 @@ jobs:
         -e PORT_CONFIGURATION_PROJECTNAME="${{ steps.repository-metadata.outputs.REPOSITORY_NAME }}" \
         -e PORT_CONFIGURATION_LOGLEVEL=2 \
         -e CI_XML_FLAGS="/exportversion=2016.2" \
-        rfns/iris-ci:0.6.1
+        rfns/iris-ci:0.6.2
     - name: Retrieve the latest asset upload url
       id: release-asset-metadata
       run: |
