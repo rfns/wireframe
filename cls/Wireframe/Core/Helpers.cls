@@ -81,7 +81,7 @@ ClassMethod SerializeArguments(ByRef args = "") As %String
   set key = ""
   set argsList = ""
   
-  if ((args = "") || args = 0) {
+  if ((args = "") || (args = 0)) {
     return "<none>"
   }
 

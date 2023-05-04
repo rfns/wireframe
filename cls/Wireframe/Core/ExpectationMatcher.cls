@@ -54,7 +54,7 @@ Method VerifyOrdered(methodLogger As Wireframe.Core.MethodLogger, index As %Inte
   if $isobject(callLog) {
     merge receivedArgs = callLog.Arguments  
   } else {
-    return $$$ERROR($$$GeneralError, $$$FormatText("Call order mismatch: expected Method '%1' to be called at call #%2 (expected args: %3).", methodName, index, serialExpectedArgs))
+    return $$$ERROR($$$GeneralError, $$$FormatText("Expected method '%1' to be called at call #%2 (with args: %3).", methodName, index, serialExpectedArgs))
   }  
   
   if '##class(Wireframe.Core.Helpers).ArgumentCompare(.receivedArgs, .expectedArgs) {
