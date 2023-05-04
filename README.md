@@ -126,14 +126,36 @@ DIfferent from _mocks_ and _stubs_. An **indepent** spy is always created by the
   write object.ForMethod("Booh").CallCount // 1
 ```
 
+## Verifiers
+
+Verifiers are bult-in services that evaluate the received value against the expectation defined by the test. You can use the output of a verifier combining it with an assertion. Whenever you use a mock, remember to test their expectations after acting.
+
+By nature verifiers provide a very clear description of the expecations that weren't met and caused the test to fail.
+
+There are two types of verifiers:
+
+* One that checks if all expectations were met: `GetVerifier()`
+* One that checks the call order and verify if expectations were met: `GetOrderedVerifier()`.
+
+### Example
+
+```objectscript
+  set mock = ##class(Wireframe.Mock).%New()
+  set verifier = mock.GetVerifier()
+
+  do mock.CallMe().Exactly(1)
+
+  do $$$AssertStatusOK(verifier.Verify()) // fails, because CallMe was not called exactly 1 times.
+```
+
 ## Argument matchers
 
-Argument matchers are a type of placeholder for arguments. There'll be some cases where the system under test might be returning a value or reference that changes everytime.
+Argument matchers are a kind of placeholder for arguments. There might have some cases where the system under test could return a value or reference that changes everytime. Without a matcher, since these returns change every call, it would obviously cause the test to fail. To prevent this from happening you implement a test to validate a criteria instead of a value.
 
-While using a defined argument would cause the test to fail. These placeholders allows the preconditions of the mock/stub to be fullfilled using specific rules defined by the matcher.
+### Example
 
-e.g. Let's say you want to ensure a method is receving a correct type of input from the SUT. Notice that
-$horolog is a special variable that holds a different value everytime it's called so __you cannnot test the value.__
+e.g. Let's say you want to ensure a method is receving the correct type of input from the SUT, this is your criteria. Notice that
+`$horolog` is a special variable that holds a different value everytime it's called so __you cannnot test the value.__
 
 ```objectscript
 ClassMethod RunSomeLongOperation()
@@ -150,12 +172,7 @@ ClassMethod RunSomeLongOperation()
 }
 ```
 
-As you can see in the example above, in order to fullfill the preconditions, we can use an argument matcher.
-
-That is, by **not** providing a value to it, but instead a type through `AnyType`, this matcher calls the `IsValid` method from `%Time` to validate if the
-input received is a valid time.
-
-Since the second part of $horolog is represented by the `%Time` class, having the matcher validate it through its class type method is still essential.
+Since it's impossible to know which values we get from it and we can't stub the `$horolog`, we opt for using an argument matcher that validates the format received by the stubbed method `Log` and checking against their reference class (including data types). In this case, a `$piece($horolog, ",", 2)` is a reference to a `%Time` data type.
 
 ```objectscript
   set logServiceMock = ##class(Wireframe.Mock).%New()
@@ -170,22 +187,7 @@ Since the second part of $horolog is represented by the `%Time` class, having th
 
   do sut.RunSomeLongOperation()
 
-  do $$$AssertStatusOK(sut.RunSomeLogOperation())
+  do $$$AssertStatusOK(logServiceMock.Verify())
 ```
 
-## Verifiers
-
-Verifiers are bult-in services that evaluate the received value against the expectation defined by the test. You can use the output of a verifier combining it with an assertion.
-
-By nature verifiers provide a very clear description of the error that caused the test to fail.
-
-# Example
-
-```objectscript
-  set mock = ##class(Wireframe.Mock).%New()
-  set verifier = mock.GetVerifier()
-
-  do mock.CallMe().Exactly(1)
-
-  do $$$AssertStatusOK(verifier.Verify()) // fails, because CallMe was not called exactly 1 times.
-```
+As said we've said before, in this case, we used the `arg.AnyOf()` to inform the verifier to check the format, not the value.
