@@ -107,7 +107,7 @@ DIfferent from _mocks_ and _stubs_. An **indepent** spy is always created by the
   set object = ##class(Wireframe.Spy).%New()
   do object.Booh()
 
-  write object.ForMethod("booh").CallCount // 1
+  write object.ForMethod("Booh").CallCount // 1
 ```
 
 * `ForMethod(methodName)`: Returns an instance of the method logger for `methodName`.
