@@ -3,9 +3,11 @@ Class Wireframe.Mock Extends (%RegisteredObject, Wireframe.Core.AbstractTestDoub
 
 Property Stub As Wireframe.Core.Stub [ Private ];
 
-Method OnSetBridge() As Wireframe.Core.ExpectationBridge [ Private ]
+Method OnSetBridge(consolidator As Wireframe.Core.BridgeConsolidator) As Wireframe.Core.ExpectationBridge [ Private ]
 {
-  return ##class(Wireframe.Core.ExpectationBridge).%New()
+  return consolidator.SetAndReturnExpectationBridge(
+    ##class(Wireframe.Core.ExpectationBridge).%New()
+  )
 }
 
 Method When() As Wireframe.Core.BehaviorBridge
@@ -14,15 +16,15 @@ Method When() As Wireframe.Core.BehaviorBridge
   
   if '$isobject(..Stub) {    
     set ..Stub = ##class(Wireframe.Core.Stub).%New(..ClassName, args...)
-  }
-  
-  do ..SetSpy(..Stub.GetObject())
+    do ..Stub.UseFromMockFactory($this)
+  }   
   
   return ..Stub.GetBridge()
 }
 
 Method Expect() As Wireframe.Core.ExpectationBridge
 {
+  
   return ..GetBridge()
 }
 

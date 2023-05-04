@@ -37,9 +37,9 @@ Method AssertObjectIsNotAnotherSpy(object As %RegisteredObject = "") [ Internal,
   }
 }
 
-Method UseThisCoordinator(coordinator As Wireframe.Core.AbstractCoordinator)
+Method UseThisConsolidator(consolidator As Wireframe.Core.BridgeConsolidator)
 {
-  do .."__Proxy__".SetCoordinator(coordinator)
+  do .."__Proxy__".SetConsolidator(consolidator)
   return $this
 }
 
@@ -122,12 +122,9 @@ Method Clear()
 {
   kill i%"__Properties__"
   kill i%"__MultiDimensionals__"
-  kill i%"__Proxy__"
 
-  if $isobject(..RealObject) do .."_FillUsingRealObject"()
-
-  set .."__Proxy__" = ##class(Wireframe.Core.MethodProxy).%New($this)
-
+  if $isobject(..RealObject) do ..FillUsingRealObject(1)
+  
   do .."__Logger__".Clear()
 }
 

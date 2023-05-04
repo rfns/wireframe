@@ -14,7 +14,7 @@ Method SetRecorder(recorder As Wireframe.Core.BehaviorRecorder) [ Final ]
 
 Method SetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder [ Final ]
 {
- 
+  
   set recorder = ..Recorders.GetAt(methodName)
   if $isobject(recorder) return recorder
   
@@ -38,9 +38,12 @@ Method OnBehaviorSet(behavior As Wireframe.Core.AbstractBehavior)
 Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.BehaviorState
 {
   set recorder = ..Recorders.GetAt(methodName)
-  if '$isobject(recorder) return ""
+  set behavior = ""
   
-  set behavior = recorder.GetNextBehavior(args...)  
+  if $isobject(recorder) {
+    set behavior = recorder.GetNextBehavior(args...)  
+  }   
+  
   return ..OnGetNextBehavior(behavior, methodName, args...)
 }
 
@@ -52,6 +55,11 @@ Method OnGetNextBehavior() As Wireframe.Core.BehaviorState [ Abstract, Private ]
 Method Reset()
 {
   do ..Recorders.Clear()
+}
+
+Method HasMethodRecorder(methodName As %String)
+{
+  return ..Recorders.IsDefined(methodName)
 }
 
 }

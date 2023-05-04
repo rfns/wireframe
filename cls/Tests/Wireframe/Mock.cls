@@ -8,7 +8,8 @@ ClassMethod T()
   set arg = mock.GetArgumentMatcher()
   
   do mock.Expect().ATest(arg.AnyOf("%ListOfDataTypes")).AndReturn(1)
-  do mock.Expect().AndAnotherTest(1).AtLeast(3).AndReturn(10)
+  do mock.Expect().ATest(arg.AnyOf("%ListOfDataTypes")).AndReturn(1)
+  do mock.Expect().AndAnotherTest().AtLeast(3).AndReturn(10)
     
   write mock.GetObject().AndAnotherTest(1)  
   write mock.GetObject().AndAnotherTest(1)
@@ -53,16 +54,25 @@ ClassMethod T2()
 ClassMethod T3()
 {
   set mock = ##class(Wireframe.Mock).%New()
+  set verifier = mock.GetVerifier()
   set arg = mock.GetArgumentMatcher()
   
   do mock.When().ICalledYou(arg.AnyOf("%Integer")).ThenReturn(10, 20, 30)
+  do mock.Expect().MyMethod().Exactly(1).AndReturn("it works")  
   
   set obj = mock.GetObject()
+  write obj.MyMethod()
+  
+  // write obj.ICalledYou(10)
+  // write obj.ICalledYou("aaa")
+  write obj.ICalledYou(20)   
+  write obj.ICalledYou(30)
+    
+  set sc = verifier.Verify()
+  do mock.Reset()
   
   write obj.ICalledYou(10)
-  write obj.ICalledYou("aaa")
-  write obj.ICalledYou(20)
-  write obj.ICalledYou(30)
+  write obj.Ouch()
 }
 
 }

@@ -1,6 +1,8 @@
 Class Wireframe.Core.AbstractTestDouble [ Abstract ]
 {
 
+Property Consolidator As Wireframe.Core.BridgeConsolidator [ Private ];
+
 Property Bridge As Wireframe.Core.AbstractCoordinatorBridge [ Private ];
 
 Property ClassName As %String [ Private ];
@@ -11,19 +13,34 @@ Property Spy As Wireframe.Spy [ Private ];
 
 Method %OnNew(className As %String = "", constructorArgs...) As %Status
 {
-
+  
   set ..ClassName = className
-
-  merge i%ConstructorArgs = constructorArgs
-
-  set ..Bridge = ..OnSetBridge()
-
+  set ..Consolidator = ##class(Wireframe.Core.BridgeConsolidator).%New()
+  
   do ..InitializeSpy(
     className,
     constructorArgs...
-  ).UseThisCoordinator(..Bridge.GetCoordinator())
+  )
+  
+  merge i%ConstructorArgs = constructorArgs 
+
+  do ..SetConsolidator(..Consolidator)
+    
 
   return $$$OK
+}
+
+Method SetConsolidator(consolidator As Wireframe.Core.BridgeConsolidator)
+{
+  set ..Consolidator = consolidator
+  set ..Bridge = ..OnSetBridge(..Consolidator)
+  
+  do ..Spy.UseThisConsolidator(..Consolidator)
+}
+
+Method GetConsolidator() As Wireframe.Core.BridgeConsolidator
+{
+  return ..Consolidator
 }
 
 Method OnSetBridge() As Wireframe.Core.AbstractCoordinatorBridge [ Abstract, Private ]

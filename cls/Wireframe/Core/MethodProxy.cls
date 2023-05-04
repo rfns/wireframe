@@ -3,7 +3,7 @@ Include wireframe
 Class Wireframe.Core.MethodProxy Extends %RegisteredObject
 {
 
-Property Coordinator As Wireframe.Core.StubCoordinator [ Private ];
+Property Consolidator As Wireframe.Core.BridgeConsolidator [ Private ];
 
 Property Generator As Wireframe.Implementation.CodeGenerator [ Private ];
 
@@ -17,9 +17,9 @@ Method %OnNew(spy As Wireframe.Spy) As %Status
   return $$$OK
 }
 
-Method SetCoordinator(coordinator As Wireframe.Core.StubCoordinator)
+Method SetConsolidator(consolidator As Wireframe.Core.BridgeConsolidator)
 {
-  set ..Coordinator = coordinator
+  set ..Consolidator = consolidator
 }
 
 Method AttemptToLinkRealObject(realObject As %RegisteredObject) [ Private ]
@@ -38,9 +38,9 @@ Method InterceptCall(methodName As %String, args...)
 
 Method CheckForBehavior(methodName, args...)
 {
-  if '$isobject(..Coordinator) return ""
+  if '$isobject(..Consolidator) return ""
 
-  return ..Coordinator.GetNextBehavior(methodName, args...)
+  return ..Consolidator.GetNextBehavior(methodName, args...)
 }
 
 Method ResolveCall(methodName As %String, behavior As Wireframe.Core.AbstractBehavior = "", args...) [ Private ]
