@@ -103,13 +103,6 @@ Created by calling the `Expect()` method. The mock API is composed by the follow
 
 DIfferent from _mocks_ and _stubs_. An **indepent** spy is always created by the constructor, which can optionally receive an __object__.
 
-```objectscript
-  set object = ##class(Wireframe.Spy).%New()
-  do object.Booh()
-
-  write object.ForMethod("Booh").CallCount // 1
-```
-
 * `ForMethod(methodName)`: Returns an instance of the method logger for `methodName`.
 * * `LastUsedArguments`: Holds a MultiDimensional of the arguments that `methodName` received last time.
 * * `LastException`: Holds an instance of an exception that `methodName` threw last time.
@@ -123,6 +116,15 @@ DIfferent from _mocks_ and _stubs_. An **indepent** spy is always created by the
 * * `SetCount`: Holds an integer that keeps track on how many times `propertyName`'s setter has been called.
 * * `Sets(n)` Holds a MultiDimensional that keeps track of the value set to `propertyName` when the setter was called at `n` times.
 * * `Sets(n)` Holds a MultiDimensional that keeps track of the value returned by `propertyName` when the setter was called at `n` times.
+
+### Example
+
+```objectscript
+  set object = ##class(Wireframe.Spy).%New()
+  do object.Booh()
+
+  write object.ForMethod("Booh").CallCount // 1
+```
 
 ## Argument matchers
 
