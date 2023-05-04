@@ -3,8 +3,11 @@ Class Wireframe.Core.Helpers Extends %RegisteredObject
 
 ClassMethod ArgumentCompare(ByRef inputs = "", ByRef matchers As Wireframe.Core.MatchableArgument = "") As %Boolean
 {
-  if $data(inputs) < 2 return 0
+  
+  if ((inputs = "") && (matchers = "")) return 1
+  
   if inputs '= matchers return 0
+  if $data(inputs) < 2 return 0
 
   for i=1:1:inputs {
     set matcher = matchers(i)
@@ -77,6 +80,10 @@ ClassMethod SerializeArguments(ByRef args = "") As %String
 {
   set key = ""
   set argsList = ""
+  
+  if ((args = "") || args = 0) {
+    return "<none>"
+  }
 
   for  {
     set key=$order(args(key))

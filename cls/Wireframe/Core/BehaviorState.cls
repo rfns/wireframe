@@ -32,7 +32,7 @@ Method HasExceptionToThrow() As %Exception.AbstractException
 Method GetArguments(Output args = 0)
 {
   merge args = i%Arguments
-  set args = $get(i%Arguments, 0)
+  set args = $get(i%Arguments, "")
 }
 
 Method GetUnwrappedArguments(Output args = 0)

@@ -70,6 +70,12 @@ Method ReceiveArguments(arguments...) As Wireframe.Core.StubBehavior [ Final ]
 
 Method WrapInArgumentType(values...) [ Private ]
 {
+  set values = $get(values, "")
+  
+  if values = "" {
+    return    
+  }
+  
   for i=1:1:values {
     set value = values(i)
     if $isobject(value) && value.%Extends("Wireframe.Core.MatchableArgument") {
