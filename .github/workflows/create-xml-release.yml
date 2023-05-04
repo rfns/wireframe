@@ -44,18 +44,13 @@ jobs:
         -e PORT_CONFIGURATION_LOGLEVEL=2 \
         -e CI_XML_FLAGS="/exportversion=2016.2" \
         ghcr.io/rfns/iris-ci/iris-ci:v0.6.2
-    - name: Retrieve the latest asset upload url
-      id: release-asset-metadata
-      run: |
-        upload_url=$(curl -s -X GET -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/rfns/wireframe/releases/tags/${{ steps.repository-metadata.outputs.VERSION }} | jq -r '. | .upload_url')
-        echo "UPLOAD_URL=$(echo "$upload_url")" >> $GITHUB_OUTPUT
     - name: Upload release asset
       id: release-asset-upload
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
       with:
-        upload_url: ${{ steps.release-asset-metadata.outputs.UPLOAD_URL }}
+        upload_url: ${{ github.event.release.upload_url }}
         asset_path: app/${{ steps.parse-tag.outputs.REPOSITORY_NAME }}.xml
         asset_name: ${{ steps.parse-tag.outputs.REPOSITORY_NAME }}-${{ steps.parse-tag.outputs.VERSION }}.xml
         asset_content_type: application/xml
