@@ -128,6 +128,8 @@ DIfferent from _mocks_ and _stubs_. An **indepent** spy is always created by the
   write object.ForMethod("Booh").CallCount // 1
 ```
 
+> ⚠️ __WARNING:__ DO NOT attempt to spy persistent objects as this might lead to inconsistent behaviors.
+
 ## Verifiers
 
 Verifiers are bult-in services that evaluate the received value against the expectation defined by the test. You can use the output of a verifier combining it with an assertion. Whenever you use a mock, remember to test their expectations after acting.
