@@ -14,8 +14,6 @@ Property CurrentExpectedCallIndex [ InitialExpression = 0, Private ];
 Method %OnNew(spy As Wireframe.Spy) As %Status
 {
   set ..Spy = spy
-  do ..AttemptToLinkRealObject(spy.GetRealObject())
-
   return $$$OK
 }
 
@@ -24,7 +22,7 @@ Method SetConsolidator(consolidator As Wireframe.Core.BridgeConsolidator)
   set ..Consolidator = consolidator
 }
 
-Method AttemptToLinkRealObject(realObject As %RegisteredObject) [ Private ]
+Method AttemptToLinkRealObject(realObject As %RegisteredObject)
 {
   if '$isobject(realObject) return
   set ..Generator = ##class(Wireframe.Implementation.CodeGenerator).%New($classname(realObject))
@@ -79,7 +77,7 @@ Method ForwardToImplementation(methodName As %String, args...) [ Internal, Priva
 
   if $isobject(..Generator) {
     try {
-      set returnValue = ..Generator.Generate($$$SubstituteMethodName(methodName)).Run(..Spy, args...)
+      set returnValue = ..Generator.Generate(realMethodName).Run(..Spy, args...)
     } catch ex {
       set exception = ex
     }
@@ -92,11 +90,13 @@ Method ForwardToImplementation(methodName As %String, args...) [ Internal, Priva
 
 Method IsMethodMocked(methodName As %String) As %Boolean
 {
+  if '$isobject(..Consolidator) return 0
   return ..Consolidator.IsMethodMocked(methodName)
 }
 
 Method IsMethodStubbed(methodName As %String) As %Boolean
 {
+  if '$isobject(..Consolidator) return 0
   return ..Consolidator.IsMethodStubbed(methodName)
 }
 

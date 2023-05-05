@@ -19,11 +19,10 @@ Method %OnNew(object As %String = "", replayConstructor As %Boolean = 0) As %Sta
 {
 
   set .."__Logger__" = ##class(Wireframe.Core.LoggerController).%New()
+  set .."__Proxy__" = ##class(Wireframe.Core.MethodProxy).%New($this)
 
   do ..AssertObjectIsNotAnotherSpy(object)
-  do ..SetRealObject(object, replayConstructor)
-
-  set .."__Proxy__" = ##class(Wireframe.Core.MethodProxy).%New($this)  
+  do ..SetRealObject(object, replayConstructor) 
 
   return $$$OK
 }
@@ -50,19 +49,22 @@ Method GetRealObject() As %RegisteredObject
 
 Method SetRealObject(object As %RegisteredObject, replayConstructor As %Boolean = 0) As %RegisteredObject
 {
-  do .."__Logger__".Disable()
   
   set .."__RealObject__" = object
-  do ..FillUsingRealObject(replayConstructor)
+  
+  do .."__Logger__".Disable()  
+     
+  do .."__Proxy__".AttemptToLinkRealObject(object)
+  do ..FillUsingRealObject(object, replayConstructor)
   
   do .."__Logger__".Enable()
 }
 
-Method FillUsingRealObject(replayConstructor As %Boolean = 0) [ Internal, Private ]
+Method FillUsingRealObject(object As %RegisteredObject, replayConstructor As %Boolean = 0) [ Internal, Private ]
 {
   do .."__Logger__".Disable()
   
-  do ##class(Wireframe.Core.Helpers).CopyProperties(..GetRealObject(), $this)
+  do ##class(Wireframe.Core.Helpers).CopyProperties(object, $this)
 
   if replayConstructor = 1 do .."__MethodProxy__".InterceptCall("_%OnNew")
 
