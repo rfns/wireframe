@@ -128,7 +128,7 @@ DIfferent from _mocks_ and _stubs_. An **indepent** spy is always created by the
   write object.ForMethod("Booh").CallCount // 1
 ```
 
-> ⚠️ __WARNING:__ DO NOT attempt to spy persistent objects as this might lead to inconsistent behaviors.
+> ⚠️ __CAUTION:__ Spying on existing objects should be done only on uttermost cases as it can lead to unexpected results. Keep your spies away from system classes (whose names begin with %).
 
 ## Verifiers
 
