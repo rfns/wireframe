@@ -49,6 +49,7 @@ Method PatchImplementation(routine As %Routine, methodName As %String, signature
     do ..PatchKillCommands(.line)
     do ..PatchMergeCommands(.line)
     do ..PatchThisReferences(.line)
+    do ..PatchClassParameters(.line)
 
     do routine.WriteLine(line)
   }
@@ -56,6 +57,12 @@ Method PatchImplementation(routine As %Routine, methodName As %String, signature
   do routine.WriteLine("")
   do routine.WriteLine("  quit """"")
   do routine.WriteLine("")
+}
+
+Method PatchClassParameters(ByRef line As %String)
+{
+  set targetClass = ..Generator.GetTargetClass().%Id()
+  set line = $replace(line, "..#", "##class("_targetClass_").#")
 }
 
 Method PatchArguments(methodName As %String) As %String [ Private ]

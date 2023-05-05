@@ -20,7 +20,7 @@ Method %OnNew(targetClass As %String) As %Status
   return $$$OK
 }
 
-Method GetTargetClass() As %Dictionary.MethodDefinition
+Method GetTargetClass() As %Dictionary.CompiledClass
 {
   return ..TargetClass
 }

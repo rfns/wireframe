@@ -53,7 +53,11 @@ EvalExpression(exp)
 
   set exp = $replace(exp, "..", "bindingArgument.")
 
-  xecute ("(result, bindingArgument) set result = "_exp, .result, bindingArgument)
+  try {
+    xecute ("(result, bindingArgument) set result = "_exp, .result, bindingArgument)
+  } catch ex { 
+    set result = ""
+  }
 
   return result
 }
