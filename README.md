@@ -17,6 +17,8 @@ With the exception of the spy, The framework API can be accessed __before__ call
 * * * `Is(value)`: Creates an argument that accepts exactly the `value`. This is actually an implicit matcher for each argument that don't use any of the other matchers.
 * * `GetObject()`: This is actually a spy linked to a mock or stub. So it returns an object with the Spy API.
 * * `GetVerifier()`: Returns an _unordered_ verifier that can be employed to verify whether the expectations set by the test were met.
+* * `VerifyInOrder()`: This is a shortcut for `GetOrderedVerifier().Verify()`.
+* * `Verify()`: This is a shortcut for `GetOVerifier().Verify()`.
 * * * `Verify()`: Validates and returns a status based on meeting or not the expectations. This will also call `Reset()`.
 * * * `VerifyOnly(methodName?)`: Same as `Verify` but this won't call `Reset()`. Useful if you want to replay the validation for debugging purposes. Passing `methodName` will restrict the validation that method only.
 * * `GerOrderedVerifier()` is about the same as `GetVerifier`, but this one takes in account the order of execution inside the SUT against the order of the expectations that were defined by the test.
