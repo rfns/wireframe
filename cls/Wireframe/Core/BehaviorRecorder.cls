@@ -9,8 +9,6 @@ Property Coordinator As Wireframe.Core.AbstractCoordinator [ Private ];
 
 Property BehaviorFactory As Wireframe.Core.AbstractBehaviorFactory [ Private ];
 
-Property CallIndex As %Integer [ Private ];
-
 Method %OnNew(coordinator As Wireframe.Core.AbstractCoordinator, behaviorFactory As Wireframe.Core.AbstractBehaviorFactory) As %Status
 {
   set ..Coordinator = coordinator
@@ -20,6 +18,7 @@ Method %OnNew(coordinator As Wireframe.Core.AbstractCoordinator, behaviorFactory
 
 Method AppendNewBehavior() As Wireframe.Core.AbstractBehaviorFactory
 {
+  
   set newBehavior = ..BehaviorFactory.Create($this)  
   
   do ..Coordinator.OnBehaviorSet(newBehavior)

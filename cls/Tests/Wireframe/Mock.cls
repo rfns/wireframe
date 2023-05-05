@@ -11,8 +11,8 @@ ClassMethod T()
   do mock.Expect().ATest(arg.AnyOf("%ListOfDataTypes")).AndReturn(1)
   do mock.Expect().AndAnotherTest().AtLeast(3).AndReturn(10)
     
-  write mock.GetObject().AndAnotherTest(1)  
-  write mock.GetObject().AndAnotherTest(1)
+  write mock.GetObject().AndAnotherTest()  
+  write mock.GetObject().AndAnotherTest()
   write mock.GetObject().ATest(##class(%ListOfDataTypes).%New())
   write mock.GetObject().AndAnotherTest(1)
   // write mock.GetObject().ATest(##class(%ListOfDataTypes).%New())
@@ -73,6 +73,29 @@ ClassMethod T3()
   
   write obj.ICalledYou(10)
   write obj.Ouch()
+}
+
+ClassMethod T4()
+{
+  set mock = ##class(Wireframe.Mock).%New()   
+  
+  do mock.When().NameGet().ThenReturn("My Name")
+  // do mock.Expect().NameSet("My Other Name 2").Exactly(1)  
+  do mock.Expect().NameSet("My Other Name 3").Exactly(1)
+  
+  set object = mock.GetObject()
+  
+  write object.Name
+  
+  set object.Name = "My Other Name 3"
+  set object.Name = "My Other Name 2"
+  set object.Name = "My Other Name 1"
+  
+  do object.Ok()
+  
+  set sc = mock.Verify()
+  
+  do $System.OBJ.DisplayError(sc)
 }
 
 }

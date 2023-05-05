@@ -3,22 +3,25 @@ Class Wireframe.Core.ExpectationMatcher Extends %RegisteredObject
 
 Property Expectation As Wireframe.Core.MockExpectation [ Private ];
 
-Method %OnNew(expectation As Wireframe.Core.MockExpectation) As %Status
+Property ExpectedCallIndex As %Integer [ Private ];
+
+Method %OnNew(expectation As Wireframe.Core.MockExpectation, expectedCallIndex As %Integer) As %Status
 {
   set ..Expectation = expectation
+  set ..ExpectedCallIndex = expectedCallIndex  
   return $$$OK
 }
 
-Method Met(methodLogger As Wireframe.Core.MethodLogger, index As %Integer = 0) As %Status
+Method MetByOcurrence(methodLogger As Wireframe.Core.MethodLogger) As %Status
 {
- 
-  if index > 0 return ..VerifyOrdered(methodLogger, index) 
+   
   return ..VerifyUnordered(methodLogger)
 }
 
-Method GetMethodName() As %String
+Method MetByMatchingOrder(methodLogger As Wireframe.Core.MethodLogger) As %Status
 {
-  return ..Expectation.GetMethodName()
+ 
+  return ..VerifyOrdered(methodLogger)
 }
 
 Method ConvertOperatorToDescriptive(times As %String) [ Private ]
@@ -31,7 +34,7 @@ Method ConvertOperatorToDescriptive(times As %String) [ Private ]
 
 Method VerifyUnordered(methodLogger As Wireframe.Core.MethodLogger) As %Status [ Private ]
 {
-  do ..Expectation.GetState().GetArguments(.expectedArgs)  
+  do ..Expectation.GetState().GetArguments(.expectedArgs)   
   
   set matches = methodLogger.GetTimesCalledWithArguments(.expectedArgs)
   set timesExpected = ..Expectation.GetExpectedTimes()
@@ -40,7 +43,12 @@ Method VerifyUnordered(methodLogger As Wireframe.Core.MethodLogger) As %Status [
   return ..ValidateExpression(methodName, timesExpected, matches, .expectedArgs)
 }
 
-Method VerifyOrdered(methodLogger As Wireframe.Core.MethodLogger, index As %Integer) As %Status [ Private ]
+Method GetMethodName() As %String
+{
+  return ..Expectation.GetMethodName()
+}
+
+Method VerifyOrdered(methodLogger As Wireframe.Core.MethodLogger) As %Status [ Private ]
 {
   set timesExpected = ..Expectation.GetExpectedTimes()
   set methodName = ..Expectation.GetMethodName()
@@ -48,18 +56,18 @@ Method VerifyOrdered(methodLogger As Wireframe.Core.MethodLogger, index As %Inte
     
   do ..Expectation.GetState().GetArguments(.expectedArgs)  
   
-  set callLog = methodLogger.GetCallLogByGeneralCallIndex(index)
+  set callLog = methodLogger.GetCallByExpectedIndex(..ExpectedCallIndex)
   set serialExpectedArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.expectedArgs)
   
   if $isobject(callLog) {
-    merge receivedArgs = callLog.Arguments  
+    merge receivedArgs = callLog.Arguments
   } else {
-    return $$$ERROR($$$GeneralError, $$$FormatText("Expected method '%1' to be called at call #%2 (with args: %3).", methodName, index, serialExpectedArgs))
+    return $$$ERROR($$$GeneralError, $$$FormatText("Expected method '%1' to be called at call #%2 (with args: %3).", methodName, ..ExpectedCallIndex, serialExpectedArgs))
   }  
   
   if '##class(Wireframe.Core.Helpers).ArgumentCompare(.receivedArgs, .expectedArgs) {
     set serialReceivedArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.receivedArgs)
-    return $$$ERROR($$$GeneralError, $$$FormatText("Method '%1' received unexpected arguments at call #%2 (received: %3) / (expected: %4)", methodName, index, serialReceivedArgs, serialExpectedArgs))
+    return $$$ERROR($$$GeneralError, $$$FormatText("Method '%1' received unexpected arguments at call #%2 (received: %3) / (expected: %4)", methodName, ..ExpectedCallIndex, serialReceivedArgs, serialExpectedArgs))
   }
   
   return ..VerifyUnordered(methodLogger)

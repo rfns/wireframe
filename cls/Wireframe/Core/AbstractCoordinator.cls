@@ -14,13 +14,13 @@ Method SetRecorder(recorder As Wireframe.Core.BehaviorRecorder) [ Final ]
 
 Method SetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder [ Final ]
 {
-  
+ 
   set recorder = ..Recorders.GetAt(methodName)
   if $isobject(recorder) return recorder
   
   set recorder = ..OnSetupRecorder(methodName)
   
-  do recorder.SetMethodName(methodName)
+  do recorder.SetMethodName(methodName)  
   do ..SetRecorder(recorder)
   
   return recorder
@@ -35,7 +35,7 @@ Method OnBehaviorSet(behavior As Wireframe.Core.AbstractBehavior)
 {
 }
 
-Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.BehaviorState
+Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.AbstractBehaviorState
 {
   set recorder = ..Recorders.GetAt(methodName)
   set behavior = ""
@@ -47,14 +47,15 @@ Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.Behavio
   return ..OnGetNextBehavior(behavior, methodName, args...)
 }
 
-Method OnGetNextBehavior() As Wireframe.Core.BehaviorState [ Abstract, Private ]
+Method OnGetNextBehavior() As Wireframe.Core.AbstractBehaviorState [ Abstract, Private ]
 {
   $$$ThrowStatus($$$ERROR($$$MethodNotImplemented, "OnGetNextBehavior"))
 }
 
-Method Reset()
+Method Reset(methodName As %String)
 {
-  do ..Recorders.Clear()
+  if methodName '= "" do ..Recorders.RemoveAt(methodName)
+  else  do ..Recorders.Clear()
 }
 
 Method HasMethodRecorder(methodName As %String)

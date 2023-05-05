@@ -9,6 +9,8 @@ Property Generator As Wireframe.Implementation.CodeGenerator [ Private ];
 
 Property Spy As Wireframe.Spy [ MultiDimensional ];
 
+Property CurrentExpectedCallIndex [ InitialExpression = 0, Private ];
+
 Method %OnNew(spy As Wireframe.Spy) As %Status
 {
   set ..Spy = spy
@@ -43,18 +45,24 @@ Method CheckForBehavior(methodName, args...)
   return ..Consolidator.GetNextBehavior(methodName, args...)
 }
 
-Method ResolveCall(methodName As %String, behavior As Wireframe.Core.AbstractBehavior = "", args...) [ Private ]
+Method ResolveCall(methodName As %String, behaviorState As Wireframe.Core.AbstractBehaviorState = "", args...) [ Private ]
 {
   set realMethodName = $$$RealMethodName(methodName)
 
-  if '$isobject(behavior) || behavior.IsPassthrough() {
+  if '$isobject(behaviorState) || behaviorState.IsPassthrough() {
     return ..ForwardToImplementation(methodName, args...)
   }
 
-  set returnValue = behavior.GetValueToReturn()
-  set exception = behavior.GetExceptionToThrow()
+  set returnValue = behaviorState.GetValueToReturn()
+  set exception = behaviorState.GetExceptionToThrow()
+  set currentExpectedCallIndex = ""
+  
+  if behaviorState.%IsA("Wireframe.Core.MockExpectationState") {
+    set ..CurrentExpectedCallIndex = ..CurrentExpectedCallIndex + 1
+    set currentExpectedCallIndex = ..CurrentExpectedCallIndex
+  }
 
-  do ..Spy.ForMethod(realMethodName).Log(.args, exception, returnValue)
+  do ..Spy.ForMethod(realMethodName).Log(.args, exception, returnValue, currentExpectedCallIndex)
 
   if $isobject(exception) && exception.%IsA("%Exception.AbstractException") {
     throw exception
@@ -80,6 +88,16 @@ Method ForwardToImplementation(methodName As %String, args...) [ Internal, Priva
   do ..Spy.ForMethod(realMethodName).Log(.args, exception, returnValue)
 
   return returnValue
+}
+
+Method IsMethodMocked(methodName As %String) As %Boolean
+{
+  return ..Consolidator.IsMethodMocked(methodName)
+}
+
+Method IsMethodStubbed(methodName As %String) As %Boolean
+{
+  return ..Consolidator.IsMethodStubbed(methodName)
 }
 
 }

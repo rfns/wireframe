@@ -81,6 +81,10 @@ Method %DispatchMethod(methodName As %String, args...)
 Method %DispatchSetProperty(propertyName As %String, value) [ ServerOnly = 1 ]
 {
   set propertySpy = ..ForProperty(propertyName)
+  
+  if .."__Proxy__".IsMethodMocked(propertyName_"Set") {
+    do ..%DispatchMethod(propertyName_"Set", value)
+  }
 
   do propertySpy.RecordSetOperation(value)
 
@@ -94,17 +98,16 @@ Method %DispatchGetProperty(propertyName As %String)
   }
 
   set propertySpy = ..ForProperty(propertyName)
-  set valueExists = $data(i%"__Properties__"(propertyName))
 
   set value = $get(i%"__Properties__"(propertyName))
-
-  if 'valueExists {
-    set value = ..%New()
-    set i%"__Properties__"(propertyName) = value
+  
+  if value = "" && .."__Proxy__".IsMethodStubbed(propertyName_"Get") {
+    set getterReturn = ..%DispatchMethod(propertyName_"Get")
+    if getterReturn '= "" set value = getterReturn
   }
-
+     
   do propertySpy.RecordGetOperation(value)
-
+  
   return value
 }
 
@@ -118,14 +121,14 @@ Method ForProperty(propertyName As %String) As Wireframe.Core.PropertyLogger
   return .."__Logger__".ForProperty(propertyName)
 }
 
-Method Clear()
+Method Clear(methodName As %String = "")
 {
   kill i%"__Properties__"
   kill i%"__MultiDimensionals__"
 
-  if $isobject(..RealObject) do ..FillUsingRealObject(1)
+  if $isobject(.."__RealObject__") do ..FillUsingRealObject(1)
   
-  do .."__Logger__".Clear()
+  do .."__Logger__".Clear(methodName)
 }
 
 Method %DispatchSetMultidimProperty(property As %String, value, subscripts...)

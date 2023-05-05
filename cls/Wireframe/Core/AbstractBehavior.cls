@@ -22,16 +22,10 @@ Method GetMethodName() As %String
   return ..Recorder.GetMethodName()
 }
 
-Method GetState() As Wireframe.Core.BehaviorState
+Method GetState() As Wireframe.Core.AbstractBehaviorState
 {
-  merge args = i%Arguments
-  
-  return ##class(Wireframe.Core.BehaviorState).%New(
-    ..ValueToReturn, 
-    ..ExceptionToThrow, 
-    ..Passthrough,
-    .args 
-  )
+
+  $$$ThrowStatus($$$ERROR($$$MethodNotImplemented, "GetState"))
 }
 
 Method SetValueToReturn(returnValues...) [ Final ]
@@ -71,11 +65,11 @@ Method ReceiveArguments(arguments...) As Wireframe.Core.StubBehavior [ Final ]
 Method WrapInArgumentType(values...) [ Private ]
 {
   set values = $get(values, "")
-  
+
   if values = "" {
-    return    
+    return
   }
-  
+
   for i=1:1:values {
     set value = values(i)
     if $isobject(value) && value.%Extends("Wireframe.Core.MatchableArgument") {

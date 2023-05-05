@@ -5,6 +5,8 @@ Property Times As %Integer [ InitialExpression = 1, Private ];
 
 Property Comparator As %String [ InitialExpression = "=", Private ];
 
+Property ExpectedCallIndex As %String [ Private ];
+
 Method Times(n As %Integer) [ Private ]
 {
   set ..Times = 1
@@ -47,6 +49,23 @@ Method Exactly(n As %Integer)
 Method GetExpectedTimes() As %String
 {
   return $$$FormatText("%1 %2", ..Comparator, ..Times)
+}
+
+Method GetState() As Wireframe.Core.MockExpectationState
+{
+  merge args = i%Arguments
+  
+  return ##class(Wireframe.Core.MockExpectationState).%New(
+    ..ValueToReturn, 
+    ..ExceptionToThrow, 
+    ..Passthrough,     
+    .args
+  )
+}
+
+Method SetExpectedCallIndex(expectedCallIndex As %Integer)
+{
+  set ..ExpectedCallIndex = expectedCallIndex
 }
 
 }

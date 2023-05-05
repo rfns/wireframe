@@ -45,9 +45,11 @@ Method IsEnabled() As %Boolean
   return ..Enabled
 }
 
-Method Clear()
+Method Clear(methodName As %String = "")
 {
-  kill i%Methods
+  if methodName '= "" kill i%Methods(methodName)
+  else  kill i%Methods
+  
   kill i%Properties
   
   set ..Enabled = 1
@@ -61,12 +63,6 @@ Method IncrementCallIndex()
 Method GetCallIndex() As %Integer
 {
   return ..CallIndex
-}
-
-Method ForEachMethod(Output methodName As %String, Output methodLogger As Wireframe.Core.MethodLogger)
-{
-  set methodName = $order(i%Methods(methodName, 1, methodLogger))
-  return (methodName = "")
 }
 
 }

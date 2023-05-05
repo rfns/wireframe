@@ -1,9 +1,9 @@
 Class Wireframe.Core.ExpectationVerifier Extends (%RegisteredObject, Wireframe.Core.AbstractExpectationVerifier)
 {
 
-Method OnVerify(expectation As Wireframe.Core.ExpectationMatcher, methodLogger As Wireframe.Core.MethodLogger, index As %Integer) As %Status
+Method OnVerify(expectation As Wireframe.Core.ExpectationMatcher, methodLogger As Wireframe.Core.MethodLogger) As %Status
 {
-  return expectation.Met(methodLogger)
+  return expectation.MetByOcurrence(methodLogger)
 }
 
 }

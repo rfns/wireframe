@@ -14,15 +14,21 @@ Method OnSetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder
   return recorder
 }
 
-Method OnGetNextBehavior(behavior As Wireframe.Core.StubBehavior, methodName As %String, args...) As Wireframe.Core.BehaviorState [ Private ]
+Method OnGetNextBehavior(behavior As Wireframe.Core.StubBehavior, methodName As %String, args...) As Wireframe.Core.StubBehaviorState [ Private ]
 {
   do ..AssertMethodIsStubbed(methodName, behavior, args...)
 
-  return behavior.GetState()
+  if $isobject(behavior) return behavior.GetState()
+  
+  return ""
 }
 
 Method AssertMethodIsStubbed(methodName As %String, behavior As Wireframe.Core.StubBehavior, args...) [ Private ]
 {
+  // Must skip setters and getters because they'll be called implicitly by the SUT most of times.
+  if $extract(methodName, *-2, *) = "Get" return
+  if $extract(methodName, *-2, *) = "Set" return
+  
   set serialArgs = ##class(Wireframe.Core.Helpers).SerializeArguments(.args)
 
   if '$isobject(behavior) {

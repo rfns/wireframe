@@ -19,13 +19,9 @@ Method %OnNew(controller As Wireframe.Core.LoggerController) As %Status
   return $$$OK
 }
 
-Method Log(ByRef args = "", exception As %Exception.AbstractException = "", returnValue = "")
+Method Log(ByRef args = "", exception As %Exception.AbstractException = "", returnValue = "", expectedCallIndex As %String = "")
 {
-  if '..Controller.IsEnabled() return
-  
-  do ..Controller.IncrementCallIndex()
-  
-  set generalCallIndex = ..Controller.GetCallIndex()
+  if '..Controller.IsEnabled() return    
   
   merge i%LastUsedArguments = args
   set ..LastException = exception
@@ -36,7 +32,7 @@ Method Log(ByRef args = "", exception As %Exception.AbstractException = "", retu
     .args, 
     exception, 
     returnValue,
-    generalCallIndex
+    expectedCallIndex
   )
 }
 
@@ -76,15 +72,16 @@ Method GetTimesReturnedWithValue(value) As %Integer
    return count
 }
 
-Method GetCallLogByGeneralCallIndex(generalCallIndex As %Integer) As Wireframe.Core.MethodCallLog
+Method GetCallByExpectedIndex(index As %Integer) As Wireframe.Core.MethodCallLog
 {
   set callIdx = ""
   
   for {
     set callIdx = $order(i%Calls(callIdx), 1, callLog)
     quit:callIdx=""
+    continue:callLog.ExpectedCallIndex=""
     
-    if callLog.GeneralCallIndex = generalCallIndex {
+    if callLog.ExpectedCallIndex = index {
       return callLog
     }
   }

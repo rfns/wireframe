@@ -80,10 +80,10 @@ Method InitializeSpy(className As %String, constructorArgs...)
   return ..Spy
 }
 
-Method Reset()
+Method Reset(methodName As %String = "")
 {
-  do ..Spy.Clear()
-  do ..Bridge.GetCoordinator().Reset()
+  do ..Spy.Clear(methodName)
+  do ..Consolidator.Reset(methodName)
 }
 
 }

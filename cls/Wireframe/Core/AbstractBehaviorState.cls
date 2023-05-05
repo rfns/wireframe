@@ -1,4 +1,4 @@
-Class Wireframe.Core.BehaviorState Extends %RegisteredObject
+Class Wireframe.Core.AbstractBehaviorState [ Abstract ]
 {
 
 Property ValueToReturn [ Private ];
@@ -9,7 +9,7 @@ Property Arguments [ MultiDimensional, Private ];
 
 Property Passthrough As %Boolean [ Private ];
 
-Method %OnNew(valueToReturn, exceptionToThrow As %Exception.AbstractException, passthrough As %Boolean, ByRef args) As %Status
+Method %OnNew(valueToReturn, exceptionToThrow As %Exception.AbstractException, passthrough As %Boolean, ByRef args = "") As %Status
 {
   set ..ValueToReturn = valueToReturn
   set ..ExceptionToThrow = exceptionToThrow

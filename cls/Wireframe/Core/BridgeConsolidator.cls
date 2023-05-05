@@ -21,7 +21,7 @@ Method SetAndReturnExpectationBridge(expectationBridge As Wireframe.Core.Expecta
   return ..ExpectationBridge
 }
 
-Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.BehaviorState
+Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.AbstractBehaviorState
 {
   if $isobject(..ExpectationBridge) {  
     set expectedBehaviorState = ..ExpectationBridge.GetCoordinator().GetNextBehavior(methodName, args...)  
@@ -36,11 +36,21 @@ Method GetNextBehavior(methodName As %String, args...) As Wireframe.Core.Behavio
   return ""
 }
 
+Method Reset(methodName As %String)
+{
+  if $isobject(..ExpectationBridge) {  
+    do ..ExpectationBridge.GetCoordinator().Reset(methodName)
+  }
+  
+  if $isobject(..BehaviorBridge) {
+    do ..ExpectationBridge.GetCoordinator().Reset(methodName)
+  }
+}
+
 Method AssertMethodIsNotStubbed(methodName As %String)
 {
-  if '$isobject(..BehaviorBridge) return 
   
-  set methodIsStubbed = ..BehaviorBridge.GetCoordinator().HasMethodRecorder(methodName)
+  set methodIsStubbed = ..IsMethodStubbed(methodName)
   
   if methodIsStubbed {
     $$$ThrowStatus($$$ERROR($$$GeneralError, $$$FormatText("Method '%1' is already mocked and cannot be stubbed.", methodName)))
@@ -49,13 +59,26 @@ Method AssertMethodIsNotStubbed(methodName As %String)
 
 Method AssertMethodIsNotMocked(methodName As %String)
 {
-  if '$isobject(..ExpectationBridge) return
   
-  set methodIsMocked = ..ExpectationBridge.GetCoordinator().HasMethodRecorder(methodName)
+  set methodIsMocked = ..IsMethodMocked(methodName)
   
   if methodIsMocked {
     $$$ThrowStatus($$$ERROR($$$GeneralError, $$$FormatText("Method '%1' is already stubbed and cannot be mocked.", methodName)))
   }
+}
+
+Method IsMethodMocked(methodName As %String) As %Boolean
+{
+  if '$isobject(..ExpectationBridge) return 0
+  
+  return ..ExpectationBridge.GetCoordinator().HasMethodRecorder(methodName)
+}
+
+Method IsMethodStubbed(methodName As %String) As %Boolean
+{
+  if '$isobject(..BehaviorBridge) return 0
+  
+  return ..BehaviorBridge.GetCoordinator().HasMethodRecorder(methodName)
 }
 
 }
