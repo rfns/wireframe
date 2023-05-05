@@ -38,5 +38,15 @@ Method GetOrderedVerifier() As Wireframe.Core.OrderedExpectationVerifier
   return ##class(Wireframe.Core.OrderedExpectationVerifier).%New($this)
 }
 
+Method Verify(methodName As %String = "")
+{
+  return ..GetVerifier().Verify()
+}
+
+Method VerifyInOrder(methodName As %String = "")
+{
+  return ..GetOrderedVerifier().Verify(methodName)
+}
+
 }
 
