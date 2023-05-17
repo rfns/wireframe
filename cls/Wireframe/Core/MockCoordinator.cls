@@ -7,6 +7,7 @@ Property ExpectedCallsByMethod [ MultiDimensional, Private ];
 
 Method OnSetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder [ Private ]
 {
+
   set expectationFactory = ##class(Wireframe.Core.MockExpectationFactory).%New()
   set recorder = ##class(Wireframe.Core.BehaviorRecorder).%New(
     $this,
@@ -19,8 +20,6 @@ Method OnSetupRecorder(methodName As %String) As Wireframe.Core.BehaviorRecorder
 Method OnBehaviorSet(behavior As Wireframe.Core.MockExpectation)
 {
   set expectedCallIndex = ..ExpectationMatchers.Count() + 1
-
-  do ..IncreaseMethodCallLimit(behavior)
 
   do ..ExpectationMatchers.Insert(
     ##class(Wireframe.Core.ExpectationMatcher).%New(behavior, expectedCallIndex)
@@ -76,15 +75,15 @@ Method Reset(methodName As %String = "")
   do ..ExpectationMatchers.Clear()
 }
 
-Method IncreaseMethodCallLimit(behavior As Wireframe.Core.MockExpectation)
-{
-  set methodName = behavior.GetMethodName()
-  set i%ExpectedCallsByMethod(methodName) = $get(i%ExpectedCallsByMethod(methodName)) + 1
-}
-
 Method GetMethodCallLimit(methodName As %String) As %Integer
 {
-  return $get(i%ExpectedCallsByMethod(methodName), 0)
+  set expectationMatchers = ..GetExpectationMatchers(methodName)
+  set callLimit = 0
+  for i=1:1:expectationMatchers.Count() {
+    set callLimit = callLimit + expectationMatchers.GetAt(i).GetExpectedTimes()
+  }
+
+  return callLimit
 }
 
 }
