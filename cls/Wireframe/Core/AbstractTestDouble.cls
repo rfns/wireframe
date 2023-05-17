@@ -15,17 +15,11 @@ Method %OnNew(className As %String = "", constructorArgs...) As %Status
 {
   
   set ..ClassName = className
-  set ..Consolidator = ##class(Wireframe.Core.BridgeConsolidator).%New()
-  
-  do ..InitializeSpy(
-    className,
-    constructorArgs...
-  )
   
   merge i%ConstructorArgs = constructorArgs 
-
-  do ..SetConsolidator(..Consolidator)
-    
+  
+  do ..InitializeSpy()   
+  do ..SetConsolidator(##class(Wireframe.Core.BridgeConsolidator).%New())
 
   return $$$OK
 }
@@ -68,13 +62,14 @@ Method GetArgumentMatcher() As Wireframe.Core.ArgumentMatcher [ Final ]
   return ##class(Wireframe.Core.ArgumentMatcher).%New()
 }
 
-Method InitializeSpy(className As %String, constructorArgs...)
+Method InitializeSpy()
 {
-  if className = "" {
+  if ..ClassName = "" {
     set ..Spy = ##class(Wireframe.Spy).%New()
   } else {
-    set object = $classmethod(className, "%New", constructorArgs...)
-    set ..Spy = ##class(Wireframe.Spy).%New(object, 1)
+    merge args = i%ConstructorArgs
+    set object = $classmethod(..ClassName, "%New", args...)
+    set ..Spy = ##class(Wireframe.Spy).%New(object)
   }
 
   return ..Spy
@@ -82,6 +77,7 @@ Method InitializeSpy(className As %String, constructorArgs...)
 
 Method Clear(methodName As %String = "")
 {
+ 
   do ..Spy.Clear(methodName)
   do ..Consolidator.Clear(methodName)
 }

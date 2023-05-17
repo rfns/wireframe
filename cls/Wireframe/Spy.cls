@@ -15,14 +15,14 @@ Property "__Logger__" As Wireframe.Core.LoggerController [ Internal, Private ];
 
 Property "__RealObject__" As %RegisteredObject [ Internal, Private ];
 
-Method %OnNew(object As %String = "", replayConstructor As %Boolean = 0) As %Status
+Method %OnNew(object As %String = "") As %Status
 {
 
   set .."__Logger__" = ##class(Wireframe.Core.LoggerController).%New()
   set .."__Proxy__" = ##class(Wireframe.Core.MethodProxy).%New($this)
 
   do ..AssertObjectIsNotAnotherSpy(object)
-  do ..SetRealObject(object, replayConstructor) 
+  do ..SetRealObject(object) 
 
   return $$$OK
 }
@@ -47,27 +47,19 @@ Method GetRealObject() As %RegisteredObject
   return .."__RealObject__"
 }
 
-Method SetRealObject(object As %RegisteredObject, replayConstructor As %Boolean = 0) As %RegisteredObject
+Method SetRealObject(object As %RegisteredObject) As %RegisteredObject
 {
+  if $isobject(object) {
+    set .."__RealObject__" = object
+  }
   
-  set .."__RealObject__" = object
+  if '$isobject(.."__RealObject__") return
   
-  do .."__Logger__".Disable()  
-     
-  do .."__Proxy__".AttemptToLinkRealObject(object)
-  do ..FillUsingRealObject(object, replayConstructor)
-  
-  do .."__Logger__".Enable()
-}
-
-Method FillUsingRealObject(object As %RegisteredObject, replayConstructor As %Boolean = 0) [ Internal, Private ]
-{
   do .."__Logger__".Disable()
+     
+  do ##class(Wireframe.Core.Helpers).CopyProperties(.."__RealObject__", $this)
+  do .."__Proxy__".AttemptToLinkRealObject(object)  
   
-  do ##class(Wireframe.Core.Helpers).CopyProperties(object, $this)
-
-  if replayConstructor = 1 do .."__Proxy__".InterceptCall("_%OnNew")
-
   do .."__Logger__".Enable()
 }
 
@@ -128,7 +120,7 @@ Method Clear(methodName As %String = "")
   kill i%"__Properties__"
   kill i%"__MultiDimensionals__"
 
-  if $isobject(.."__RealObject__") do ..FillUsingRealObject(1)
+  if $isobject(.."__RealObject__") do ..SetRealObject(.."__RealObject__")
   
   do .."__Logger__".Clear(methodName)
 }
@@ -171,6 +163,14 @@ Method "_MergeMultiDimensional"(name As %String, ByRef value, subscripts...) [ I
   }
 
   merge i%"__MultiDimensionals__"(name) = value
+}
+
+Method "_%OnDetermineClass"(oid As %String, Output class As %String = "") [ Internal ]
+{
+  if '$isobject(.."__RealObject__") return 
+  
+  set class = $classname(.."__RealObject__")
+  return $$$OK
 }
 
 }
