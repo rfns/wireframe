@@ -43,7 +43,7 @@ Method Reset(methodName As %String)
   }
   
   if $isobject(..BehaviorBridge) {
-    do ..ExpectationBridge.GetCoordinator().Reset(methodName)
+    do ..BehaviorBridge.GetCoordinator().Reset(methodName)
   }
 }
 
@@ -54,7 +54,7 @@ Method Clear(methodName As %String)
   }
   
   if $isobject(..BehaviorBridge) {
-    do ..ExpectationBridge.GetCoordinator().Clear(methodName)
+    do ..BehaviorBridge.GetCoordinator().Clear(methodName)
   }
 }
 
