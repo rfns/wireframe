@@ -46,8 +46,10 @@ Method CheckForBehavior(methodName, args...)
 Method ResolveCall(methodName As %String, behaviorState As Wireframe.Core.AbstractBehaviorState = "", args...) [ Private ]
 {
   set realMethodName = $$$RealMethodName(methodName)
+  set isPassthroughByStub = $isobject(behaviorState) && behaviorState.IsPassthrough()
+  set isPassthroughBySpy = '$isobject(..Consolidator) || '$isobject(behaviorState)
 
-  if '$isobject(behaviorState) || behaviorState.IsPassthrough() {
+  if isPassthroughBySpy || isPassthroughByStub {
     return ..ForwardToImplementation(methodName, args...)
   }
 
