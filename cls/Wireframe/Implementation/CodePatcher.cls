@@ -48,8 +48,9 @@ Method PatchImplementation(routine As %Routine, methodName As %String, signature
     do ..EnsureAsReturnable(implementationObject, .line)
     do ..PatchKillCommands(.line)
     do ..PatchMergeCommands(.line)
+    do ..PatchSystemLibraryMethods(.line)
     do ..PatchThisReferences(.line)
-    do ..PatchClassParameters(.line)
+    do ..PatchClassParameters(.line)    
 
     do routine.WriteLine(line)
   }
@@ -63,6 +64,14 @@ Method PatchClassParameters(ByRef line As %String)
 {
   set targetClass = ..Generator.GetTargetClass().%Id()
   set line = $replace(line, "..#", "##class("_targetClass_").#")
+}
+
+Method PatchSystemLibraryMethods(ByRef line As %String)
+{
+  set regex = ##class(%Regex.Matcher).%New("(?:[\s\t]+)?(?:\.\.)(\%\w+)")
+  set regex.Text = line
+  
+  set line = regex.ReplaceAll(" injectedSpy.""_$1""")
 }
 
 Method PatchArguments(methodName As %String) As %String [ Private ]
