@@ -56,7 +56,7 @@ Method GetNextBehavior(args...) As Wireframe.Core.AbstractBehavior
 
 Method FindIndexOfNextMatchingBehavior(args...) As %Integer [ Private ]
 {
-  set offsetIndex = ..BehaviorIndex
+  set offsetIndex = ..BehaviorIndex + 1
   if offsetIndex = 0 set offsetIndex = 1
   
   for i=offsetIndex:1:..Behaviors.Count() {
