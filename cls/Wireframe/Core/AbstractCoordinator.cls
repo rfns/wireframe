@@ -54,6 +54,23 @@ Method OnGetNextBehavior() As Wireframe.Core.AbstractBehaviorState [ Abstract, P
 
 Method Reset(methodName As %String)
 {
+  if methodName '= "" {
+    do ..Recorders.GetAt(methodName).ResetTrackingIndex()
+    return
+  }
+  
+  set name = ""
+  
+  for {
+    set recorder = ..Recorders.GetNext(.name)
+    if '$isobject(recorder) return
+    
+    do recorder.ResetTrackingIndex()  
+  }
+}
+
+Method Clear(methodName As %String)
+{
   if methodName '= "" do ..Recorders.RemoveAt(methodName)
   else  do ..Recorders.Clear()
 }

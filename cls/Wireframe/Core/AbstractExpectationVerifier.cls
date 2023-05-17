@@ -63,7 +63,7 @@ Method VerifyCallLimitForMethod(expectationMethodName As %String, methodLogger A
 Method Verify(methodName As %String = "") As %Status [ Final ]
 {
   set sc = ..VerifyOnly(methodName)
-  do ..Mock.Reset(methodName)
+  do ..Mock.Clear(methodName)
   
   return sc
 }

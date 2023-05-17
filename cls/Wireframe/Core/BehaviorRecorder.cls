@@ -9,6 +9,8 @@ Property Coordinator As Wireframe.Core.AbstractCoordinator [ Private ];
 
 Property BehaviorFactory As Wireframe.Core.AbstractBehaviorFactory [ Private ];
 
+Property BehaviorIndex As %Integer [ InitialExpression = 0, Private ];
+
 Method %OnNew(coordinator As Wireframe.Core.AbstractCoordinator, behaviorFactory As Wireframe.Core.AbstractBehaviorFactory) As %Status
 {
   set ..Coordinator = coordinator
@@ -47,14 +49,17 @@ Method GetNextBehavior(args...) As Wireframe.Core.AbstractBehavior
   if nextIndex < 1 return ""
 
   set nextBehavior = ..Behaviors.GetAt(nextIndex)
-  do ..Behaviors.RemoveAt(nextIndex)
+  set ..BehaviorIndex  = nextIndex  
 
   return nextBehavior
 }
 
 Method FindIndexOfNextMatchingBehavior(args...) As %Integer [ Private ]
 {
-  for i=1:1:..Behaviors.Count() {
+  set offsetIndex = ..BehaviorIndex
+  if offsetIndex = 0 set offsetIndex = 1
+  
+  for i=offsetIndex:1:..Behaviors.Count() {
     set behavior = ..Behaviors.GetAt(i)
     do behavior.GetState().GetArguments(.recordedArgs)
 
@@ -85,6 +90,11 @@ Method SetMethodName(methodName As %String)
 Method GetMethodName()
 {
   return ..MethodName
+}
+
+Method ResetTrackingIndex()
+{
+  return ..BehaviorIndex = 0
 }
 
 }

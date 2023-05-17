@@ -47,6 +47,17 @@ Method Reset(methodName As %String)
   }
 }
 
+Method Clear(methodName As %String)
+{
+  if $isobject(..ExpectationBridge) {  
+    do ..ExpectationBridge.GetCoordinator().Clear(methodName)
+  }
+  
+  if $isobject(..BehaviorBridge) {
+    do ..ExpectationBridge.GetCoordinator().Clear(methodName)
+  }
+}
+
 Method AssertMethodIsNotStubbed(methodName As %String)
 {
   

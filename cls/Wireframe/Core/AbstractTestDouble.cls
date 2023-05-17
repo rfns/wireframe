@@ -80,6 +80,12 @@ Method InitializeSpy(className As %String, constructorArgs...)
   return ..Spy
 }
 
+Method Clear(methodName As %String = "")
+{
+  do ..Spy.Clear(methodName)
+  do ..Consolidator.Clear(methodName)
+}
+
 Method Reset(methodName As %String = "")
 {
   do ..Spy.Clear(methodName)
