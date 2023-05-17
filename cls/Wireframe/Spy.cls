@@ -22,7 +22,7 @@ Method %OnNew(object As %String = "") As %Status
   set .."__Proxy__" = ##class(Wireframe.Core.MethodProxy).%New($this)
 
   do ..AssertObjectIsNotAnotherSpy(object)
-  do ..SetRealObject(object) 
+  do ..SetRealObject(object)
 
   return $$$OK
 }
@@ -52,14 +52,14 @@ Method SetRealObject(object As %RegisteredObject) As %RegisteredObject
   if $isobject(object) {
     set .."__RealObject__" = object
   }
-  
+
   if '$isobject(.."__RealObject__") return
-  
+
   do .."__Logger__".Disable()
-     
+
   do ##class(Wireframe.Core.Helpers).CopyProperties(.."__RealObject__", $this)
-  do .."__Proxy__".AttemptToLinkRealObject(object)  
-  
+  do .."__Proxy__".AttemptToLinkRealObject(object)
+
   do .."__Logger__".Enable()
 }
 
@@ -75,7 +75,7 @@ Method %DispatchMethod(methodName As %String, args...)
 Method %DispatchSetProperty(propertyName As %String, value) [ ServerOnly = 1 ]
 {
   set propertySpy = ..ForProperty(propertyName)
-  
+
   if .."__Proxy__".IsMethodMocked(propertyName_"Set") {
     do ..%DispatchMethod(propertyName_"Set", value)
   }
@@ -94,14 +94,14 @@ Method %DispatchGetProperty(propertyName As %String)
   set propertySpy = ..ForProperty(propertyName)
 
   set value = $get(i%"__Properties__"(propertyName))
-  
+
   if value = "" && .."__Proxy__".IsMethodStubbed(propertyName_"Get") {
     set getterReturn = ..%DispatchMethod(propertyName_"Get")
     if getterReturn '= "" set value = getterReturn
   }
-     
+
   do propertySpy.RecordGetOperation(value)
-  
+
   return value
 }
 
@@ -121,7 +121,7 @@ Method Clear(methodName As %String = "")
   kill i%"__MultiDimensionals__"
 
   if $isobject(.."__RealObject__") do ..SetRealObject(.."__RealObject__")
-  
+
   do .."__Logger__".Clear(methodName)
 }
 
@@ -167,8 +167,8 @@ Method "_MergeMultiDimensional"(name As %String, ByRef value, subscripts...) [ I
 
 Method "_%OnDetermineClass"(oid As %String, Output class As %String = "") [ Internal ]
 {
-  if '$isobject(.."__RealObject__") return 
-  
+  if '$isobject(.."__RealObject__") return $$$OK
+
   set class = $classname(.."__RealObject__")
   return $$$OK
 }
