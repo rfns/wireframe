@@ -7,9 +7,17 @@ Property Comparator As %String [ InitialExpression = "=", Private ];
 
 Property ExpectedCallIndex As %String [ Private ];
 
-Method Times(n As %Integer) [ Private ]
+Method SetTimes(n As %Integer) [ Private ]
 {
-  set ..Times = 1
+  if '$isvalidnum(n) {
+    $$$ThrowStatus($$$ERROR($$$GeneralError, "Times value must be a number."))
+  }
+  
+  if n < 0 {
+    $$$ThrowStatus($$$ERROR($$$GeneralError, "Times value must be a positive number."))
+  }
+  
+  set ..Times = n
   set ..Comparator = "="
   return $this
 }
@@ -36,19 +44,24 @@ Method AtLeast(n As %Integer)
 Method AtMost(n As %Integer)
 {
   set ..Times = n
-  set ..Comparator = "<="
+  set ..Comparator = "<="  
   
   return $this
 }
 
 Method Exactly(n As %Integer)
 {
-  return ..Times(n)
+  return ..SetTimes(n)
 }
 
-Method GetExpectedTimes() As %String
+Method GetExpressionOfExpectedTimes() As %String
 {
   return $$$FormatText("%1 %2", ..Comparator, ..Times)
+}
+
+Method GetExpectedTimes() As %Integer
+{
+  return ..Times
 }
 
 Method GetState() As Wireframe.Core.MockExpectationState
