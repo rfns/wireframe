@@ -94,7 +94,7 @@ Method GetMethodName()
 
 Method ResetTrackingIndex()
 {
-  return ..BehaviorIndex = 0
+  set ..BehaviorIndex = 0
 }
 
 }
