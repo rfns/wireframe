@@ -11,6 +11,8 @@ Property Spy As Wireframe.Spy [ MultiDimensional ];
 
 Property CurrentExpectedCallIndex [ InitialExpression = 0, Private ];
 
+Property CallStack As %Integer [ InitialExpression = 0 ];
+
 Method %OnNew(spy As Wireframe.Spy) As %Status
 {
   set ..Spy = spy
@@ -24,6 +26,7 @@ Method SetConsolidator(consolidator As Wireframe.Core.BridgeConsolidator)
 
 Method AttemptToLinkRealObject(realObject As %RegisteredObject)
 {
+ 
   if '$isobject(realObject) return
   set ..Generator = ##class(Wireframe.Implementation.CodeGenerator).%New($classname(realObject))
 }
@@ -31,8 +34,12 @@ Method AttemptToLinkRealObject(realObject As %RegisteredObject)
 Method InterceptCall(methodName As %String, args...)
 {
   set realMethodName = $$$RealMethodName(methodName)
-  set behavior = ..CheckForBehavior(methodName, args...)
-
+  set behavior = ""
+  
+  if ..CallStack = 0 {
+    set behavior = ..CheckForBehavior(methodName, args...)
+  }
+  
   return ..ResolveCall(realMethodName, behavior, args...)
 }
 
@@ -78,11 +85,13 @@ Method ForwardToImplementation(methodName As %String, args...) [ Internal, Priva
   set realMethodName = $$$RealMethodName(methodName)
 
   if $isobject(..Generator) {
-    try {
+    set ..CallStack = ..CallStack + 1
+    try {      
       set returnValue = ..Generator.Generate(realMethodName).Run(..Spy, args...)
     } catch ex {
       set exception = ex
-    }
+    }    
+    set ..CallStack = ..CallStack - 1
   }
 
   do ..Spy.ForMethod(realMethodName).Log(.args, exception, returnValue)
