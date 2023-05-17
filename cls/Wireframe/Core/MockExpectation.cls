@@ -33,6 +33,11 @@ Method AndThrow(exceptions... As %Exception.AbstractException)
   do ..SetExceptionToThrow(exceptions...)
 }
 
+Method AndPassthrough()
+{
+  do ..SetPassthrough()
+}
+
 Method AtLeast(n As %Integer)
 {
   set ..Times = n
