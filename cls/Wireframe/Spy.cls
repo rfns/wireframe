@@ -66,7 +66,7 @@ Method FillUsingRealObject(object As %RegisteredObject, replayConstructor As %Bo
   
   do ##class(Wireframe.Core.Helpers).CopyProperties(object, $this)
 
-  if replayConstructor = 1 do .."__MethodProxy__".InterceptCall("_%OnNew")
+  if replayConstructor = 1 do .."__Proxy__".InterceptCall("_%OnNew")
 
   do .."__Logger__".Enable()
 }
