@@ -146,8 +146,8 @@ There are two types of verifiers:
 ```objectscript
   set mock = ##class(Wireframe.Mock).%New()
   set verifier = mock.GetVerifier()
-
-  do mock.CallMe().Exactly(1)
+  
+  do mock.Expect().CallMe().Exactly(1)    
 
   do $$$AssertStatusOK(verifier.Verify()) // fails, because CallMe was not called exactly 1 times.
 ```
