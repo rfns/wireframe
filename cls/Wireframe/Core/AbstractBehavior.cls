@@ -34,7 +34,7 @@ Method SetValueToReturn(returnValues...) [ Final ]
 
   if returnValues > 1 {
     for i=2:1:returnValues {
-      do ..Recorder.CloneCurrentBehavior().ThenReturn(returnValues(i))
+      do ..Recorder.CloneCurrentBehavior().SetValueToReturn(returnValues(i))
     }
     quit
   }
@@ -46,7 +46,7 @@ Method SetExceptionToThrow(exceptions... As %Exception.AbstractException) [ Fina
 
   if exceptions > 1 {
     for i=2:1:exceptions {
-      do ..Recorder.CloneCurrentBehavior().ThenThrow(exceptions(i))
+      do ..Recorder.CloneCurrentBehavior().SetExceptionToThrow(exceptions(i))
     }
   }
 }
