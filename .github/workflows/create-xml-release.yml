@@ -1,58 +1,54 @@
 name: Create XML release asset
-
 on:
   release:
     types: [published]
-
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Clone this repository
-      uses: actions/checkout@v2
-      with:
-        path: app
-    - name: Clone IRIS-CI-XML
-      uses: actions/checkout@v2
-      with:
-        path: iris-ci-xml
-        repository: rfns/iris-ci-xml
-    - name: Install dos2unix
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y dos2unix
-    - name: Remove Test folder (Unix format)
-      run: rm -rf $PWD/app/cls/Tests
-    - name: Convert line endings to LF (Unix format)
-      run: find . -type f -exec dos2unix {} \;
-    - name: Parse the tag
-      id: parse-tag
-      run:  |
-        echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
-        echo "REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $1}')" >> $GITHUB_OUTPUT
-        echo "REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")" >> $GITHUB_OUTPUT
-    - name: Import this repository and generate XML artifacts
-      run: |
-        touch $PWD/app/${{ steps.parse-tag.outputs.REPOSITORY_NAME }}.xml
-        chmod 777 -R app $PWD/app/${{ steps.parse-tag.outputs.REPOSITORY_NAME }}.xml
-        docker pull ghcr.io/rfns/iris-ci/iris-ci:v0.6.2
-        docker run --rm \
-        -t --name xml-ci \
-        -v $PWD/app:/opt/ci/app \
-        -v $PWD/iris-ci-xml/ci/App/Installer.cls:/opt/ci/App/Installer.cls \
-        -v $PWD/iris-ci-xml/ci/Runner.cls:/opt/ci/Runner.cls \
-        -e PORT_CONFIGURATION_PROJECTNAME="${{ steps.parse-tag.outputs.REPOSITORY_NAME }}" \
-        -e PORT_CONFIGURATION_LOGLEVEL=2 \
-        -e CI_XML_FLAGS="/exportversion=2016.2" \
-        ghcr.io/rfns/iris-ci/iris-ci:v0.6.2
-    - name: Upload release asset
-      id: release-asset-upload
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: app/${{ steps.parse-tag.outputs.REPOSITORY_NAME }}.xml
-        asset_name: ${{ steps.parse-tag.outputs.REPOSITORY_NAME }}-${{ steps.parse-tag.outputs.VERSION }}.xml
-        asset_content_type: application/xml
+      - name: Clone this repository
+        uses: actions/checkout@v2
+        with:
+          path: app
+      - name: Clone IRIS-CI-XML
+        uses: actions/checkout@v2
+        with:
+          path: iris-ci-xml
+          repository: rfns/iris-ci-xml
+      - name: Install dos2unix
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dos2unix
+      - name: Remove Test folder (Unix format)
+        run: rm -rf $PWD/app/cls/Tests
+      - name: Convert line endings to LF (Unix format)
+        run: find . -type f -exec dos2unix {} \;
+      - name: Parse the tag
+        id: parse-tag
+        run: |
+          echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $1}')" >> $GITHUB_OUTPUT
+          echo "REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")" >> $GITHUB_OUTPUT
+      - name: Import this repository and generate XML artifacts
+        run: |
+          touch $PWD/app/${{ steps.parse-tag.outputs.REPOSITORY_NAME }}.xml
+          chmod 777 -R app $PWD/app/${{ steps.parse-tag.outputs.REPOSITORY_NAME }}.xml
+          docker run --rm \
+          -t --name xml-ci \
+          -v $PWD/app:/opt/ci/app \
+          -v $PWD/iris-ci-xml/ci/App/Installer.cls:/opt/ci/App/Installer.cls \
+          -v $PWD/iris-ci-xml/ci/Runner.cls:/opt/ci/Runner.cls \
+          -e PORT_CONFIGURATION_PROJECTNAME="${{ steps.parse-tag.outputs.REPOSITORY_NAME }}" \
+          -e PORT_CONFIGURATION_LOGLEVEL=2 \
+          -e CI_XML_FLAGS="/exportversion=2016.2" \
+          ghcr.io/rfns/iris-ci/iris-ci:v0.6.4
+      - name: Upload release asset
+        id: release-asset-upload
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: app/${{ steps.parse-tag.outputs.REPOSITORY_NAME }}.xml
+          asset_name: ${{ steps.parse-tag.outputs.REPOSITORY_NAME }}-${{ steps.parse-tag.outputs.VERSION }}.xml
+          asset_content_type: application/xml
