@@ -41,7 +41,7 @@ jobs:
           -e PORT_CONFIGURATION_PROJECTNAME="${{ steps.parse-tag.outputs.REPOSITORY_NAME }}" \
           -e PORT_CONFIGURATION_LOGLEVEL=2 \
           -e CI_XML_FLAGS="/exportversion=2016.2" \
-          ghcr.io/rfns/iris-ci/iris-ci:v0.6.4
+          ghcr.io/rfns/iris-ci/iris-ci:v0.6.3
       - name: Upload release asset
         id: release-asset-upload
         uses: actions/upload-release-asset@v1
